@@ -431,7 +431,7 @@
                 }
               ]
             },
-            "unit": "deckbytes"
+            "unit": "decbytes"
           },
           "overrides": []
         },
@@ -1333,7 +1333,7 @@
         "datasource": {
           "default": false,
           "type": "prometheus",
-          "uid": "daamw-mscycle"
+          "uid": "${Datasource}"
         },
         "description": "Cluster heatmap view showing TX throughput for the top 20 busiest VMs.",
         "fieldConfig": {
@@ -1416,7 +1416,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "daamw-mscycle"
+              "uid": "${Datasource}"
             },
             "editorMode": "code",
             "expr": "topk(20, sum by (instance) (\r\n  irate(node_mountstats_nfs_total_write_bytes_total[$__rate_interval])\r\n))\r\n\r\n",
@@ -1435,7 +1435,7 @@
         "datasource": {
           "default": false,
           "type": "prometheus",
-          "uid": "daamw-mscycle"
+          "uid": "${Datasource}"
         },
         "description": "Cluster heatmap view showing RX throughput for the top 20 busiest VMs.",
         "fieldConfig": {
@@ -1518,7 +1518,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "daamw-mscycle"
+              "uid": "${Datasource}"
             },
             "editorMode": "code",
             "expr": "topk(20, sum by (instance) (\r\n  irate(node_mountstats_nfs_total_read_bytes_total[$__rate_interval])\r\n))",
@@ -1540,6 +1540,25 @@
     ],
     "templating": {
       "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "prometheus",
+            "value": "${Datasource}"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Data Source",
+          "multi": false,
+          "name": "Datasource",
+          "options": [],
+          "query": "prometheus",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },        
         {
           "current": {
             "selected": true,
@@ -1566,25 +1585,6 @@
           "skipUrlSync": false,
           "sort": 1,
           "type": "query"
-        },
-        {
-          "current": {
-            "selected": false,
-            "text": "prometheus",
-            "value": "daamw-mscycle"
-          },
-          "hide": 0,
-          "includeAll": false,
-          "label": "Data Source",
-          "multi": false,
-          "name": "Datasource",
-          "options": [],
-          "query": "prometheus",
-          "queryValue": "",
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "type": "datasource"
         },
         {
           "current": {
