@@ -144,7 +144,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_sm_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_sm_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -248,7 +248,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_sm_occupancy{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_sm_occupancy{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -352,7 +352,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_tensor_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_tensor_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -456,7 +456,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_pipe_fp64_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_pipe_fp64_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -560,7 +560,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_pipe_fp32_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_pipe_fp32_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -664,7 +664,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_pipe_fp16_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_pipe_fp16_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -794,7 +794,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_dram_active{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_dram_active{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -889,7 +889,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_nvlink_tx_bytes{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_nvlink_tx_bytes{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -991,7 +991,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_nvlink_rx_bytes{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_nvlink_rx_bytes{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1119,7 +1119,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_pcie_tx_bytes{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_pcie_tx_bytes{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1221,7 +1221,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_prof_pcie_rx_bytes{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_prof_pcie_rx_bytes{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1333,7 +1333,7 @@
             "type": "prometheus",
             "uid": "${Datasource}"
           },
-          "definition": "label_values(dcgm_fi_prof_sm_active{hostname=\"$instance\"}, gpu)",
+          "definition": "label_values(dcgm_fi_prof_sm_active{instance=\"$instance\"}, gpu)",
           "hide": 0,
           "includeAll": true,
           "label": "GPU",
@@ -1341,7 +1341,7 @@
           "name": "gpu",
           "options": [],
           "query": {
-            "query": "label_values(dcgm_fi_prof_sm_active{hostname=\"$instance\"}, gpu)",
+            "query": "label_values(dcgm_fi_prof_sm_active{instance=\"$instance\"}, gpu)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 1,

@@ -138,7 +138,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_gpu_util{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_gpu_util{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -238,7 +238,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_mem_copy_util{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_mem_copy_util{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -352,7 +352,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_sm_clock{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_sm_clock{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -449,7 +449,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_mem_clock{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_mem_clock{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -564,7 +564,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_gpu_temp{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_gpu_temp{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -662,7 +662,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_memory_temp{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_memory_temp{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -777,7 +777,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_power_usage{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_power_usage{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -874,7 +874,7 @@
         "pluginVersion": "9.4.7",
         "targets": [
           {
-            "expr": "dcgm_fi_dev_total_energy_consumption{hostname=~\"$instance\", gpu=~\"$gpu\"} / 10^3",
+            "expr": "dcgm_fi_dev_total_energy_consumption{instance=~\"$instance\", gpu=~\"$gpu\"} / 10^3",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -959,7 +959,7 @@
               "uid": "${Datasource}"
             },
             "editorMode": "code",
-            "expr": "dcgm_fi_dev_xid_errors{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_xid_errors{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "format": "table",
             "legendFormat": "XID",
             "range": true,
@@ -1106,7 +1106,7 @@
               "type": "prometheus",
               "uid": "${Datasource}"
             },
-            "expr": "dcgm_fi_dev_ecc_sbe_vol_total{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_ecc_sbe_vol_total{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1205,7 +1205,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "dcgm_fi_dev_ecc_dbe_vol_total{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_ecc_dbe_vol_total{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1304,7 +1304,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "dcgm_fi_dev_ecc_sbe_agg_total{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_ecc_sbe_agg_total{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1403,7 +1403,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "dcgm_fi_dev_ecc_dbe_agg_total{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_ecc_dbe_agg_total{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "refId": "A"
           }
@@ -1513,7 +1513,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "dcgm_fi_dev_clock_throttle_reasons{hostname=~\"$instance\", gpu=~\"$gpu\"}",
+            "expr": "dcgm_fi_dev_clock_throttle_reasons{instance=~\"$instance\", gpu=~\"$gpu\"}",
             "legendFormat": "GPU {{gpu}}",
             "range": true,
             "refId": "A"
@@ -1611,7 +1611,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "dcgm_fi_dev_thermal_violation{hostname=~\"$instance\", gpu=~\"$gpu\"} / 10^6",
+            "expr": "dcgm_fi_dev_thermal_violation{instance=~\"$instance\", gpu=~\"$gpu\"} / 10^6",
             "legendFormat": "GPU {{gpu}}",
             "range": true,
             "refId": "A"
@@ -1709,7 +1709,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "dcgm_fi_dev_power_violation{hostname=~\"$instance\", gpu=~\"$gpu\"} / 10^6",
+            "expr": "dcgm_fi_dev_power_violation{instance=~\"$instance\", gpu=~\"$gpu\"} / 10^6",
             "legendFormat": "GPU {{gpu}}",
             "range": true,
             "refId": "A"
@@ -1824,7 +1824,7 @@
             "type": "prometheus",
             "uid": "${Datasource}"
           },
-          "definition": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"}, gpu)",
+          "definition": "label_values(dcgm_fi_dev_gpu_util{instance=\"$instance\"}, gpu)",
           "hide": 0,
           "includeAll": true,
           "label": "GPU",
@@ -1832,7 +1832,7 @@
           "name": "gpu",
           "options": [],
           "query": {
-            "query": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"}, gpu)",
+            "query": "label_values(dcgm_fi_dev_gpu_util{instance=\"$instance\"}, gpu)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 1,
