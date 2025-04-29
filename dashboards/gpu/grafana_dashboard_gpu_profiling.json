@@ -1273,6 +1273,25 @@
         {
           "current": {
             "selected": false,
+            "text": "prometheus",
+            "value": "${Datasource}"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Data Source",
+          "multi": false,
+          "name": "Datasource",
+          "options": [],
+          "query": "prometheus",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "selected": false,
             "text": "aks-agentpool-38703046-vmss000000",
             "value": "aks-agentpool-38703046-vmss000000"
           },
@@ -1299,25 +1318,6 @@
           "tagsQuery": "",
           "type": "query",
           "useTags": false
-        },
-        {
-          "current": {
-            "selected": false,
-            "text": "prometheus",
-            "value": "daamw-mscycle"
-          },
-          "hide": 0,
-          "includeAll": false,
-          "label": "Data Source",
-          "multi": false,
-          "name": "Datasource",
-          "options": [],
-          "query": "prometheus",
-          "queryValue": "",
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "type": "datasource"
         },
         {
           "current": {

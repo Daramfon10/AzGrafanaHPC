@@ -5940,7 +5940,7 @@
           "current": {
             "selected": false,
             "text": "prometheus",
-            "value": "daamw-mscycle"
+            "value": "${Datasource}"
           },
           "hide": 0,
           "includeAll": false,
@@ -6051,8 +6051,8 @@
       ]
     },
     "time": {
-      "from": "2025-04-27T21:22:50.643Z",
-      "to": "2025-04-27T21:32:50.643Z"
+      "from": "now-30m",
+      "to": "now"
     },
     "timepicker": {
       "hidden": false,
