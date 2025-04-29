@@ -5909,6 +5909,25 @@
         {
           "current": {
             "selected": false,
+            "text": "prometheus",
+            "value": "${Datasource}"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Data Source",
+          "multi": false,
+          "name": "Datasource",
+          "options": [],
+          "query": "prometheus",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "selected": false,
             "text": "da-promtest",
             "value": "da-promtest"
           },
@@ -5935,25 +5954,6 @@
           "tagsQuery": "",
           "type": "query",
           "useTags": false
-        },
-        {
-          "current": {
-            "selected": false,
-            "text": "prometheus",
-            "value": "${Datasource}"
-          },
-          "hide": 0,
-          "includeAll": false,
-          "label": "Data Source",
-          "multi": false,
-          "name": "Datasource",
-          "options": [],
-          "query": "prometheus",
-          "queryValue": "",
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "type": "datasource"
         },
         {
           "current": {
