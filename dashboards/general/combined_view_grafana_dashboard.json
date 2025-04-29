@@ -725,7 +725,7 @@
             "editorMode": "code",
             "expr": "(100 * (1 - node_memory_memavailable_bytes{instance=~\"$instance\"} / node_memory_memtotal_bytes{instance=~\"$instance\"}))",
             "interval": "",
-            "legendFormat": "{{hostname}}",
+            "legendFormat": "{{instance}}",
             "range": true,
             "refId": "A"
           }
@@ -822,7 +822,7 @@
             },
             "editorMode": "code",
             "expr": "(rate(node_network_transmit_bytes_total{device='eth0', instance=~\"$instance\"}[$__rate_interval]))",
-            "legendFormat": "{{hostname}}",
+            "legendFormat": "{{instance}}",
             "range": true,
             "refId": "A"
           }
@@ -919,7 +919,7 @@
             },
             "editorMode": "code",
             "expr": "(rate(node_network_receive_bytes_total{device='eth0', instance=~\"$instance\"}[$__rate_interval]))",
-            "legendFormat": "{{hostname}}",
+            "legendFormat": "{{instance}}",
             "range": true,
             "refId": "A"
           }
@@ -1021,7 +1021,7 @@
             },
             "editorMode": "code",
             "expr": "node_memory_memavailable_bytes{instance=~\"$instance\"}",
-            "legendFormat": "{{hostname}}",
+            "legendFormat": "{{instance}}",
             "range": true,
             "refId": "A"
           }
