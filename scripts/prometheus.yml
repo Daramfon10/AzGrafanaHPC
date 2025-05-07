@@ -1,0 +1,60 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ["localhost:9090"]
+       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "prometheus"
+  - job_name: "node"
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ["localhost:9500"]
+        # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "node"
+    metric_relabel_configs:
+      - source_labels: [nodename]
+        #regex:'(.*)'
+        target_label: instance
+        replacement: '$1'
+        action: replace
+       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+  - job_name: "gpu" 
+    static_configs:
+      - targets: ["localhost:9400"]
+        # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "gpuapp"
+          instance: "DA-PromTest"
+       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+remote_write:
+    - url: "https://daamw-mscycle-8bax.eastus2-1.metrics.ingest.monitor.azure.com/dataCollectionRules/dcr-4304a97b6ad14645b96b56d400a2d151/streams/Microsoft-PrometheusMetrics/api/v1/write?api-version=2023-04-24"
+      azuread:
+        cloud: 'AzurePublic'
+        managed_identity:
+          client_id: "60189e16-60c9-414d-ba88-3306412492ba"
