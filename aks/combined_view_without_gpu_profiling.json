@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 61,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -108,7 +108,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "node_uname_info{instance=~\"$instance\", cluster=\"$cluster\"}",
+          "expr": "node_uname_info{instance=~\"^$instance$\", cluster=\"$cluster\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -374,7 +374,7 @@
           },
           "editorMode": "code",
           "expr": "100 - (node_filesystem_avail_bytes{instance=\"$instance\",mountpoint=\"/\",fstype!=\"rootfs\", cluster=\"$cluster\"} * 100) / node_filesystem_size_bytes{instance=\"$instance\",mountpoint=\"/\",fstype!=\"rootfs\",cluster=\"$cluster\"}",
-          "format": "time_series",
+          "format": "table",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -456,8 +456,10 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
+          "exemplar": false,
           "expr": "node_time_seconds{instance=\"$instance\", cluster=\"$cluster\"} - node_boot_time_seconds{instance=\"$instance\", cluster=\"$cluster\"}",
-          "format": "time_series",
+          "format": "table",
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -540,7 +542,7 @@
           },
           "editorMode": "code",
           "expr": "node_time_seconds{instance=\"$instance\", cluster=\"$cluster\"} - node_boot_time_seconds{instance=\"$instance\", cluster=\"$cluster\"}",
-          "format": "time_series",
+          "format": "table",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -644,7 +646,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "(100 * (1 - avg by (hostname, cpu) (rate(node_cpu_seconds_total{mode='idle', instance=~\"$instance\", cpu=~\"$cpu\", cluster=\"$cluster\" }[$__rate_interval]))))",
+          "expr": "(100 * (1 - avg by (hostname, cpu) (rate(node_cpu_seconds_total{mode='idle', instance=~\"^$instance$\", cpu=~\"^$cpu$\", cluster=\"$cluster\" }[$__rate_interval]))))",
           "legendFormat": "CPU {{cpu}}",
           "range": true,
           "refId": "A"
@@ -746,7 +748,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "node_cpu_scaling_frequency_hertz{instance=~\"$instance\", cpu=~\"$cpu\", cluster=\"$cluster\"} / 1000000",
+          "expr": "node_cpu_frequency_hertz{instance=~\"^$instance$\", cpu=~\"^$cpu$\", cluster=\"$cluster\"} / 1000000",
           "legendFormat": "CPU {{cpu}}",
           "range": true,
           "refId": "A"
@@ -850,7 +852,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "(100 * (1 - node_memory_memavailable_bytes{instance=~\"$instance\", cluster=\"$cluster\"} / node_memory_memtotal_bytes{instance=~\"$instance\", cluster=\"$cluster\"}))",
+          "expr": "(100 * (1 - node_memory_memavailable_bytes{instance=~\"^$instance$\", cluster=\"$cluster\"} / node_memory_memtotal_bytes{instance=~\"^$instance$\", cluster=\"$cluster\"}))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "range": true,
@@ -953,7 +955,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "node_memory_memavailable_bytes{instance=~\"$instance\", cluster=\"$cluster\"}",
+          "expr": "node_memory_memavailable_bytes{instance=~\"^$instance$\", cluster=\"$cluster\"}",
           "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
@@ -1062,7 +1064,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_vmstat_pgmajfault{instance=\"$instance\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_vmstat_pgmajfault{instance=~\"^$instance$\",cluster=\"$cluster\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
           "legendFormat": "{{instance}}",
@@ -1165,7 +1167,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "node_filesystem_size_bytes{instance=\"${instance}\",device!~\"rootfs\", cluster=\"$cluster\"} - node_filesystem_avail_bytes{instance=\"${instance}\",device!~\"rootfs\", cluster=\"$cluster\"}",
+          "expr": "node_filesystem_size_bytes{instance=~\"^$instance$\",device!~\"rootfs\", cluster=\"$cluster\"} - node_filesystem_avail_bytes{instance=~\"^$instance$\",device!~\"rootfs\", cluster=\"$cluster\"}",
           "legendFormat": "{{mountpoint}}",
           "range": true,
           "refId": "A"
@@ -1275,7 +1277,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "(rate(node_network_receive_bytes_total{device='eth0', instance=~\"$instance\", cluster=\"$cluster\"}[$__rate_interval]))",
+          "expr": "(rate(node_network_receive_bytes_total{device='eth0', instance=~\"^$instance$\", cluster=\"$cluster\"}[$__rate_interval]))",
           "legendFormat": "{{instance}} - receive",
           "range": true,
           "refId": "A"
@@ -1286,7 +1288,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "(rate(node_network_transmit_bytes_total{device='eth0', instance=~\"$instance\",cluster=\"$cluster\"}[$__rate_interval]))",
+          "expr": "(rate(node_network_transmit_bytes_total{device='eth0', instance=~\"^$instance$\",cluster=\"$cluster\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "{{instance}} - transmit",
@@ -1389,7 +1391,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_disk_io_time_seconds_total{instance=\"${instance}\",device=~\"$diskdevices\", cluster=\"$cluster\"} [$__rate_interval])",
+          "expr": "irate(node_disk_io_time_seconds_total{instance=~\"^$instance$\",device=~\"^$diskdevices$\", cluster=\"$cluster\"} [$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -1503,7 +1505,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_disk_reads_completed_total{instance=\"$instance\",device=~\"$diskdevices\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_disk_reads_completed_total{instance=~\"^$instance$\",device=~\"^$diskdevices$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{device}} - reads completed",
           "range": true,
           "refId": "A"
@@ -1514,7 +1516,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_disk_writes_completed_total{instance=\"$instance\",device=~\"$diskdevices\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_disk_writes_completed_total{instance=\"^$instance$\",device=~\"^$diskdevices$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{device}} - writes completed",
           "range": true,
           "refId": "B"
@@ -1628,7 +1630,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_disk_read_bytes_total{instance=\"$instance\",device=~\"$diskdevices\", cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_disk_read_bytes_total{instance=~\"^$instance$\",device=~\"^$diskdevices$\", cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{device}} -read",
           "range": true,
           "refId": "A"
@@ -1639,7 +1641,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_disk_written_bytes_total{instance=\"$instance\",device=~\"$diskdevices\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_disk_written_bytes_total{instance=~\"^$instance$\",device=~\"^$diskdevices$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{device}} - write",
           "range": true,
           "refId": "B"
@@ -1753,7 +1755,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_mountstats_nfs_operations_requests_total{instance=\"$instance\", operation=~\"^READ$\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_mountstats_nfs_operations_requests_total{instance=~\"^$instance$\", operation=~\"^READ$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{export}} - {{operation}}s completed",
           "range": true,
           "refId": "A"
@@ -1764,7 +1766,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_mountstats_nfs_operations_requests_total{instance=\"$instance\", operation=~\"^WRITE$\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_mountstats_nfs_operations_requests_total{instance=~\"^$instance$\", operation=~\"^WRITE$\",cluster=\"$cluster\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
           "legendFormat": "{{export}} - {{operation}}s completed",
@@ -1880,7 +1882,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_mountstats_nfs_total_read_bytes_total{instance=\"$instance\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_mountstats_nfs_total_read_bytes_total{instance=~\"^$instance$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{export}} - read",
           "range": true,
           "refId": "A"
@@ -1891,7 +1893,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_mountstats_nfs_total_write_bytes_total{instance=\"$instance\", cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "irate(node_mountstats_nfs_total_write_bytes_total{instance=~\"^$instance$\", cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "{{export}} - write",
           "range": true,
           "refId": "B"
@@ -1944,7 +1946,19 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Values"
+            },
+            "properties": [
+              {
+                "id": "custom.width"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 6,
@@ -1965,12 +1979,7 @@
         },
         "frameIndex": 0,
         "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "node_uname_info"
-          }
-        ]
+        "sortBy": []
       },
       "pluginVersion": "11.2.8",
       "targets": [
@@ -1980,7 +1989,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_gpu_util{hostname=\"$instance\", cluster=\"$cluster\", gpu=\"0\"}",
+          "expr": "dcgm_fi_dev_gpu_util{hostname=~\"^$instance$\", cluster=\"$cluster\", gpu=\"0\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -2080,7 +2089,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "avg(dcgm_fi_dev_gpu_util{hostname=~\"$instance\", cluster=\"$cluster\"})",
+          "expr": "avg(dcgm_fi_dev_gpu_util{hostname=~\"^$instance$\", cluster=\"$cluster\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2154,7 +2163,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "avg ((dcgm_fi_dev_power_usage{hostname=~\"$instance\",cluster=\"$cluster\"} / dcgm_fi_dev_power_mgmt_limit{hostname=~\"$instance\",cluster=\"$cluster\"}) * 100)\r\n\r\n",
+          "expr": "avg ((dcgm_fi_dev_power_usage{hostname=~\"^$instance$\",cluster=\"$cluster\"} / dcgm_fi_dev_power_mgmt_limit{hostname=~\"^$instance$\",cluster=\"$cluster\"}) * 100)\r\n\r\n",
           "legendFormat": "CPU {{cpu}}",
           "range": true,
           "refId": "A"
@@ -2228,7 +2237,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "avg ((dcgm_fi_dev_gpu_temp{hostname=~\"$instance\",cluster=\"$cluster\"} / dcgm_fi_dev_gpu_max_op_temp{hostname=~\"$instance\",cluster=\"$cluster\"}) * 100) ",
+          "expr": "avg ((dcgm_fi_dev_gpu_temp{hostname=~\"^$instance$\",cluster=\"$cluster\"} / dcgm_fi_dev_gpu_max_op_temp{hostname=~\"^$instance$\",cluster=\"$cluster\"}) * 100) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2317,7 +2326,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "max by (gpu) (dcgm_fi_dev_xid_errors{hostname=\"$instance\", cluster=\"$cluster\"})",
+          "expr": "max by (gpu) (dcgm_fi_dev_xid_errors{hostname=~\"^$instance$\", cluster=\"$cluster\"})",
           "legendFormat": "{{gpu}}",
           "range": true,
           "refId": "A"
@@ -2423,7 +2432,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_gpu_util{hostname=~\"$instance\", gpu=~\"$gpu\", cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_gpu_util{hostname=~\"^$instance$\", gpu=~\"^$gpu$\", cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -2529,7 +2538,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_mem_copy_util{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_mem_copy_util{hostname=\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -2632,7 +2641,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_sm_clock{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_sm_clock{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -2703,7 +2712,32 @@
           },
           "unit": "MHz"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "GPU 0"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -2735,7 +2769,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_mem_clock{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_mem_clock{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -2839,7 +2873,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_gpu_temp{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_gpu_temp{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -2943,7 +2977,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_memory_temp{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_memory_temp{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -3014,7 +3048,32 @@
           },
           "unit": "watt"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "GPU 0"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -3047,7 +3106,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_power_usage{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}",
+          "expr": "dcgm_fi_dev_power_usage{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -3150,7 +3209,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "dcgm_fi_dev_total_energy_consumption{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"} / 10^3",
+          "expr": "dcgm_fi_dev_total_energy_consumption{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"} / 10^3",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -3264,7 +3323,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "DCGM_FI_DEV_XID_ERRORS{hostname=\"$instance\",cluster=\"$cluster\"}",
+          "expr": "DCGM_FI_DEV_XID_ERRORS{hostname=~\"^$instance$\",cluster=\"$cluster\"}",
           "format": "table",
           "legendFormat": "__auto",
           "range": true,
@@ -3486,7 +3545,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "DCGM_FI_DEV_CLOCKS_EVENT_REASONS{hostname=\"$instance\",cluster=\"$cluster\"}",
+          "expr": "DCGM_FI_DEV_CLOCKS_EVENT_REASONS{hostname=~\"^$instance$\",cluster=\"$cluster\"}",
           "format": "table",
           "instant": false,
           "legendFormat": "{{instance}}",
@@ -3705,7 +3764,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_ecc_sbe_agg_total{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_ecc_sbe_agg_total{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -3871,7 +3930,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_ecc_dbe_agg_total{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_ecc_dbe_agg_total{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -4036,7 +4095,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_ecc_sbe_vol_total{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_ecc_sbe_vol_total{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -4202,7 +4261,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_ecc_dbe_vol_total{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_ecc_dbe_vol_total{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -4338,7 +4397,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "increase(dcgm_fi_dev_thermal_violation{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval]) / 1e9",
+          "expr": "increase(dcgm_fi_dev_thermal_violation{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval]) / 1e9",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -4440,7 +4499,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "increase(dcgm_fi_dev_power_violation{hostname=~\"$instance\", gpu=~\"$gpu\",cluster=\"$cluster\"}[$__rate_interval]) / 1e9",
+          "expr": "increase(dcgm_fi_dev_power_violation{hostname=~\"^$instance$\", gpu=~\"^$gpu$\",cluster=\"$cluster\"}[$__rate_interval]) / 1e9",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -4578,7 +4637,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "node_infiniband_physical_state_id{instance=~\"$instance\", device!=\"mlx5_an0\",cluster=\"$cluster\"}",
+          "expr": "node_infiniband_physical_state_id{instance=~\"^$instance$\", device!=\"mlx5_an0\",cluster=\"$cluster\"}",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -4680,7 +4739,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "clamp_max(increase(node_infiniband_link_downed_total{instance=\"$instance\",cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval]), 1)",
+          "expr": "clamp_max(increase(node_infiniband_link_downed_total{instance=~\"^$instance$\",cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval]), 1)",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -4797,7 +4856,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(node_infiniband_port_data_received_bytes_total{instance=~\"$instance\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "rate(node_infiniband_port_data_received_bytes_total{instance=~\"^$instance$\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
           "interval": "",
           "legendFormat": "{{device}} - receive",
           "range": true,
@@ -4809,7 +4868,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "rate(node_infiniband_port_data_transmitted_bytes_total{instance=~\"$instance\", cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "rate(node_infiniband_port_data_transmitted_bytes_total{instance=~\"^$instance$\", cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
           "legendFormat": "{{device}} - transmit",
@@ -4912,7 +4971,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(node_infiniband_port_errors_received_total{instance=~\"$instance\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "increase(node_infiniband_port_errors_received_total{instance=~\"^$instance$\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -5013,7 +5072,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(node_infiniband_port_constraint_errors_received_total{instance=~\"$instance\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "increase(node_infiniband_port_constraint_errors_received_total{instance=~\"^$instance$\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -5114,7 +5173,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "rate(node_infiniband_port_transmit_wait_total{instance=~\"$instance\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "rate(node_infiniband_port_transmit_wait_total{instance=~\"^$instance$\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -5215,7 +5274,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(node_infiniband_port_constraint_errors_transmitted_total{instance=~\"$instance\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "increase(node_infiniband_port_constraint_errors_transmitted_total{instance=~\"^$instance$\",cluster=\"$cluster\", device!=\"mlx5_an0\"}[$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -5316,7 +5375,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(node_infiniband_port_discards_transmitted_total{instance=~\"$instance\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
+          "expr": "increase(node_infiniband_port_discards_transmitted_total{instance=~\"^$instance$\", cluster=\"$cluster\",device!=\"mlx5_an0\"}[$__rate_interval])",
           "legendFormat": "{{device}}",
           "range": true,
           "refId": "A"
@@ -5445,7 +5504,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "clamp_max(increase(dcgm_fi_dev_nvlink_count_link_recovery_failed_events{hostname=\"$instance\",cluster=\"$cluster\"}[$__rate_interval]), 1)",
+          "expr": "clamp_max(increase(dcgm_fi_dev_nvlink_count_link_recovery_failed_events{hostname=~\"^$instance$\",cluster=\"$cluster\"}[$__rate_interval]), 1)",
           "format": "table",
           "instant": false,
           "legendFormat": "{{instance}}",
@@ -5667,7 +5726,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_nvlink_count_local_link_integrity_errors{hostname=~\"$instance\", cluster=\"$cluster\", gpu=~\"$gpu\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_nvlink_count_local_link_integrity_errors{hostname=~\"^$instance$\", cluster=\"$cluster\", gpu=~\"^$gpu$\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -5820,7 +5879,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "rate(dcgm_fi_prof_nvlink_rx_bytes{hostname=~\"$instance\", cluster=\"$cluster\", gpu=~\"$gpu\"}[$__rate_interval])",
+          "expr": "rate(dcgm_fi_prof_nvlink_rx_bytes{hostname=~\"^$instance$\", cluster=\"$cluster\", gpu=~\"^$gpu$\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}} - receive",
           "range": true,
           "refId": "A"
@@ -5831,7 +5890,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "rate(dcgm_fi_prof_nvlink_tx_bytes{hostname=~\"$instance\",cluster=\"$cluster\", gpu=~\"$gpu\"}[$__rate_interval])",
+          "expr": "rate(dcgm_fi_prof_nvlink_tx_bytes{hostname=~\"^$instance$\",cluster=\"$cluster\", gpu=~\"^$gpu$\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
           "legendFormat": "GPU {{gpu}} - transmit",
@@ -5965,7 +6024,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_nvlink_count_rx_errors{hostname=~\"$instance\",cluster=\"$cluster\", gpu=~\"$gpu\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_nvlink_count_rx_errors{hostname=~\"^$instance$\",cluster=\"$cluster\", gpu=~\"^$gpu$\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -6131,7 +6190,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "increase(dcgm_fi_dev_nvlink_count_tx_discards{hostname=~\"$instance\", cluster=\"$cluster\",gpu=~\"$gpu\"}[$__rate_interval])",
+          "expr": "increase(dcgm_fi_dev_nvlink_count_tx_discards{hostname=~\"^$instance$\", cluster=\"$cluster\",gpu=~\"^$gpu$\"}[$__rate_interval])",
           "legendFormat": "GPU {{gpu}}",
           "range": true,
           "refId": "A"
@@ -6206,8 +6265,8 @@
       {
         "current": {
           "selected": true,
-          "text": "da-aks-cluster4-hpcsku",
-          "value": "da-aks-cluster4-hpcsku"
+          "text": "da-hpc-cluster",
+          "value": "da-hpc-cluster"
         },
         "datasource": {
           "type": "prometheus",
@@ -6234,8 +6293,8 @@
       {
         "current": {
           "selected": true,
-          "text": "aks-agentpool-38703046-vmss000001",
-          "value": "aks-agentpool-38703046-vmss000001"
+          "text": "aks-hpcsku-28720227-vmss000000",
+          "value": "aks-hpcsku-28720227-vmss000000"
         },
         "datasource": {
           "type": "prometheus",
@@ -6338,7 +6397,7 @@
           "type": "prometheus",
           "uid": "${Datasource}"
         },
-        "definition": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"}, gpu)",
+        "definition": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"},gpu)",
         "hide": 0,
         "includeAll": true,
         "label": "GPU",
@@ -6346,8 +6405,9 @@
         "name": "gpu",
         "options": [],
         "query": {
-          "query": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"}, gpu)",
-          "refId": "StandardVariableQuery"
+          "qryType": 1,
+          "query": "label_values(dcgm_fi_dev_gpu_util{hostname=\"$instance\"},gpu)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
@@ -6357,10 +6417,9 @@
       },
       {
         "current": {
-          "isNone": true,
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "dcgm_fi_dev_power_mgmt_limit{cluster=\"da-hpc-cluster\",container=\"exporter\",device=\"nvidia0\",endpoint=\"metrics\",gpu=\"0\",hostname=\"aks-hpcsku-28720227-vmss000000\",instance=\"10.244.4.112:9400\",job=\"dcgm-nvidia-dcgm-exporter\",modelname=\"nvidia a100 80gb pcie\",namespace=\"default\",pci_bus_id=\"00000001:00:00.0\",pod=\"dcgm-nvidia-dcgm-exporter-9cvzq\",service=\"dcgm-nvidia-dcgm-exporter\",uuid=\"gpu-c8cbbf1b-463c-ad59-15e3-8b3f8e46c39d\"}",
+          "value": "dcgm_fi_dev_power_mgmt_limit{cluster=\"da-hpc-cluster\",container=\"exporter\",device=\"nvidia0\",endpoint=\"metrics\",gpu=\"0\",hostname=\"aks-hpcsku-28720227-vmss000000\",instance=\"10.244.4.112:9400\",job=\"dcgm-nvidia-dcgm-exporter\",modelname=\"nvidia a100 80gb pcie\",namespace=\"default\",pci_bus_id=\"00000001:00:00.0\",pod=\"dcgm-nvidia-dcgm-exporter-9cvzq\",service=\"dcgm-nvidia-dcgm-exporter\",uuid=\"gpu-c8cbbf1b-463c-ad59-15e3-8b3f8e46c39d\"}"
         },
         "datasource": {
           "type": "prometheus",
@@ -6394,7 +6453,7 @@
           "type": "prometheus",
           "uid": "${Datasource}"
         },
-        "definition": "dcgm_fi_dev_power_mgmt_limit{gpu=\"0\",hostname=\"$instance\"}",
+        "definition": "dcgm_fi_dev_power_mgmt_limit{gpu=\"0\",instance=\"$instance\"}",
         "hide": 2,
         "includeAll": false,
         "multi": false,
@@ -6402,7 +6461,7 @@
         "options": [],
         "query": {
           "qryType": 5,
-          "query": "dcgm_fi_dev_power_mgmt_limit{gpu=\"0\",hostname=\"$instance\"}",
+          "query": "dcgm_fi_dev_power_mgmt_limit{gpu=\"0\",instance=\"$instance\"}",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -6422,7 +6481,7 @@
           "type": "prometheus",
           "uid": "${Datasource}"
         },
-        "definition": "label_values(dcgm_fi_dev_power_mgmt_limit{gpu=\"0\", hostname=\"$instance\"},physical_host)",
+        "definition": "label_values(dcgm_fi_dev_power_mgmt_limit{gpu=\"0\", instance=\"$instance\"},physical_host)",
         "hide": 2,
         "includeAll": false,
         "multi": false,
@@ -6430,7 +6489,7 @@
         "options": [],
         "query": {
           "qryType": 5,
-          "query": "label_values(dcgm_fi_dev_power_mgmt_limit{gpu=\"0\", hostname=\"$instance\"},physical_host)",
+          "query": "label_values(dcgm_fi_dev_power_mgmt_limit{gpu=\"0\", instance=\"$instance\"},physical_host)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
