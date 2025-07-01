@@ -1,0 +1,4120 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 291,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 37,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    TotalClusters = dcount(Tenant),\r\n    NodesinService = dcountif(NodeId,IsNodeInService == true),\r\n    AllocatedNodes = dcountif(NodeId,IsNodeInService == true and IsHEN == false)\r\n    //CustomerNodes = dcountif(NodeId,IsNodeInService == true and IsCustomer== true)\r\n\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Fleet Summary",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "AllocatedNodes": 3,
+              "NodesinService": 2,
+              "TotalClusters": 0,
+              "TotalNodes": 1
+            },
+            "renameByName": {
+              "AllocatedNodes": "Allocated Nodes",
+              "NodesinService": "Nodes In Service",
+              "TotalClusters": "Total Number of Clusters",
+              "TotalNodes": "Total Number Of Nodes"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "// Use fixed reference time like your inspiration query\r\nlet reference_time = now();\r\nlet last_month = reference_time - 30d;\r\nlet last_week = reference_time - 7d;\r\nlet last_day = reference_time - 1d;\r\n\r\nlet base_filter = cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" and IsUtilityNode == false and CloudName == \"Public\"\r\n| where Region in~ ($region) | where Platform in~ ($platform) | where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter) | where Tenant in~ ($cluster);\r\n\r\n// Current data (using TimeWindowEnd like your inspiration)\r\nlet current_data = base_filter\r\n| where TimeWindowEnd between (reference_time - 4h .. reference_time)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Yesterday data (same pattern as inspiration)\r\nlet yesterday_data = base_filter\r\n| where TimeWindowEnd between (bin(last_day, 1d) .. bin(last_day, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Last week data\r\nlet last_week_data = base_filter\r\n| where TimeWindowEnd between (bin(last_week, 1d) .. bin(last_week, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Last month data\r\nlet last_month_data = base_filter\r\n| where TimeWindowEnd between (bin(last_month, 1d) .. bin(last_month, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Calculate changes\r\nlet current_nis = toscalar(current_data | project NIS_Percent);\r\nlet yesterday_nis = toscalar(yesterday_data | project NIS_Percent);\r\nlet last_week_nis = toscalar(last_week_data | project NIS_Percent);\r\nlet last_month_nis = toscalar(last_month_data | project NIS_Percent);\r\n\r\nprint \r\n    DoD = round(current_nis - yesterday_nis, 2),\r\n    WoW = round(current_nis - last_week_nis, 2),\r\n    MoM = round(current_nis - last_month_nis, 2)",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Nodes In Service (NIS) Change (%)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "AllocatedNodes": 3,
+              "NodesinService": 2,
+              "TotalClusters": 0,
+              "TotalNodes": 1
+            },
+            "renameByName": {
+              "AllocatedNodes": "Allocated Nodes",
+              "NodesinService": "Nodes In Service",
+              "TotalClusters": "Total Number of Clusters",
+              "TotalNodes": "Total Number Of Nodes"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "#EF843C",
+                "value": 10
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 15
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 35,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "",
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n//| where SnapshotTime > ago(24h)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    OFRCount = dcountif(NodeId,State == \"OFR\"),\r\n    InfinibandCount = dcountif(NodeId,State == \"InfiniBand RCA\"),\r\n    TransitionCount = dcountif(NodeId,State == \"Transition\"),\r\n    ValidationCount = dcountif(NodeId,State == \"Validation\")\r\n| extend OFR = 100.0 * OFRCount / TotalNodes\r\n| extend Infiniband = 100.0 * InfinibandCount / TotalNodes\r\n| extend Transition = 100.0 * TransitionCount / TotalNodes\r\n| extend Validation = 100.0 * ValidationCount / TotalNodes\r\n| project OFR, Infiniband, Transition, Validation",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "OOS Breakdown",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "NIS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "Infiniband": 2,
+              "OFR": 0,
+              "Transition": 3,
+              "Validation": 1
+            },
+            "renameByName": {
+              "HEN": "% HEN",
+              "Infiniband": "Infiniband RCA",
+              "MTRA": "",
+              "NIS": "% NIS",
+              "OFR": "Out for Repair",
+              "SLAStatus": "SLA Status",
+              "Transition": "Transition",
+              "Validation": "HPC Perfgate Validation"
+            }
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes In Service(NIS)"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "to": 95
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 95,
+                      "result": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SLA Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "At Risk": {
+                        "color": "red",
+                        "index": 1
+                      },
+                      "Healthy": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 38,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    NodesInService = dcountif(NodeId, IsNodeInService == true),\r\n    HealthyEmptyNodes = dcountif(NodeId, IsHEN == true)\r\n    by Platform\r\n| extend \r\n    NIS = round(100.0 * NodesInService / TotalNodes, 1),\r\n    HEN = round(100.0 * HealthyEmptyNodes / TotalNodes, 1)\r\n| extend \r\n    SLA95Count = ceiling(TotalNodes * 0.95),  // 95% of total nodes\r\n    NodeDelta95 = NodesInService - ceiling(TotalNodes * 0.95)  // How many nodes above/below 95%\r\n| extend SLAStatus = iff(NIS < 95, \"At Risk\", \"Healthy\")\r\n| project Platform, NIS, HEN, NodeDelta95, SLAStatus, TotalNodes, NodesInService, SLA95Count",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Platform Health Summary",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "NIS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "NodesInService": true,
+              "SLA95Count": true,
+              "TotalNodes": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "HEN": "% Healthy Empty Nodes (HEN)",
+              "MTRA": "",
+              "NIS": "% Nodes In Service (NIS)",
+              "NodeDelta95": "95% SLA Node Delta",
+              "SLAStatus": "SLA Status"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Gbits"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "// Use Grafana time range and filters\r\nlet _endTime = $__timeTo();\r\nlet _startTime = $__timeFrom();\r\n\r\n// Determine bin size based on time range\r\nlet binSize = case(\r\n    _endTime - _startTime <= 6h, 1m,\r\n    _endTime - _startTime <= 24h, 3m,\r\n    _endTime - _startTime <= 2d, 6m,\r\n    _endTime - _startTime <= 14d, 42m,\r\n    2h\r\n);\r\nlet window = binSize/1s;\r\n\r\n// Get clusters from your filters\r\nlet _clustersInFabric = cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Tenant;\r\n\r\n// HCA Traffic\r\ncluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where PreciseTimeStamp between (_startTime .. _endTime)\r\n| where Tenant in (_clustersInFabric)\r\n| extend TimeBucket = bin(RowTimeStamp, binSize)\r\n| summarize HCA_Throughput_Gbps = round(sum(Bytes_Sent)*8/(window*1e9), 2) by TimeBucket\r\n| project Time = TimeBucket, value = HCA_Throughput_Gbps\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "OpenAI": false,
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": true,
+          "pluginVersion": "6.0.1",
+          "query": "// Use Grafana time range and filters\r\nlet _endTime = $__timeTo();\r\nlet _startTime = $__timeFrom();\r\n\r\n// Determine bin size based on time range (same as Query A)\r\nlet binSize = case(\r\n    _endTime - _startTime <= 6h, 1m,\r\n    _endTime - _startTime <= 24h, 3m,\r\n    _endTime - _startTime <= 2d, 6m,\r\n    _endTime - _startTime <= 14d, 42m,\r\n    2h\r\n);\r\n\r\n// SM Log Volume - try direct syslog table access\r\ncluster('azurehpc-public.centralus.kusto.windows.net').database('hpcinterconnect').UnionOfAllLogs(\"syslog\", \"SyslogData_Mapped\")\r\n| where TimeGenerated between (_startTime .. _endTime)\r\n| where substring(Computer, 0, 3) in ($datacenter)  // Filter by datacenter\r\n| where Computer contains \"ufm\"  // UFM devices\r\n| where SyslogMessage contains \"OpenSM\"  // OpenSM log entries\r\n| extend TimeBucket = bin(TimeGenerated, binSize)\r\n| summarize OpenSM_LogCount = count() by TimeBucket\r\n| project Time = TimeBucket, value = OpenSM_LogCount\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "B",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Aggregate HCA Traffic Egress",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 5,
+      "panels": [],
+      "title": "Node Status",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 25
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "AllocationStatus"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "Not Allocated"
+                      },
+                      "1": {
+                        "index": 0,
+                        "text": "Is Allocated"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HealthStatus"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "Unhealthy Empty Node"
+                      },
+                      "1": {
+                        "index": 0,
+                        "text": "Healthy Empty Node"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 36
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 20
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where NodeId == '$node_id'\r\n| extend \r\n    VMCreationTime = todatetime(VirtualMachineCreationTime),\r\n    LiveDate = todatetime(LIVEDate),\r\n    NodeUptime = iff(isnotempty(todatetime(LIVEDate)), datetime_diff('day', now(), todatetime(LIVEDate)), 0),\r\n    VMUptime = iff(isnotempty(todatetime(VirtualMachineCreationTime)), datetime_diff('day', now(), todatetime(VirtualMachineCreationTime)), 0),\r\n    AllocationStatus = iff(IsNodeInService == true and IsHEN == false, 1, 0),\r\n    HealthStatus = iff(IsNodeInService == true and IsHEN == true, 1, 0)\r\n| summarize \r\n    // NodeUptimeDays = max(NodeUptime),\r\n    // VMUptimeDays = max(VMUptime),\r\n    AllocationStatus = max(AllocationStatus),\r\n    HealthStatus = max(HealthStatus)",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Node Health ",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "NodeUptimeDays": "Node Uptime",
+              "VMUptimeDays": "VM Uptime"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 25
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 36
+      },
+      "id": 18,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName in (\"GPU-TEMP-GB-GPU\", \"GPU-TEMP-TLIMIT\")\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| where isfinite(TelemetryValueNum)  // Filter out NaN values\r\n| summarize \r\n    CurrentTemp = case(\r\n        \"$aggregation\" == \"avg\", avgif(TelemetryValueNum, TelemetryName == \"GPU-TEMP-GB-GPU\"),\r\n        \"$aggregation\" == \"max\", maxif(TelemetryValueNum, TelemetryName == \"GPU-TEMP-GB-GPU\"),\r\n        \"$aggregation\" == \"min\", minif(TelemetryValueNum, TelemetryName == \"GPU-TEMP-GB-GPU\"),\r\n        avgif(TelemetryValueNum, TelemetryName == \"GPU-TEMP-GB-GPU\")\r\n    ),\r\n    TempCountdown = avgif(TelemetryValueNum, TelemetryName == \"GPU-TEMP-TLIMIT\")\r\n| extend ThrottleThreshold = CurrentTemp + TempCountdown\r\n| extend value = case(\r\n    isnan(CurrentTemp) or isnan(TempCountdown) or ThrottleThreshold <= 0, 0.0,\r\n    (CurrentTemp / ThrottleThreshold) * 100\r\n)\r\n| project value",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "GPU Temp Utilization ($aggregation)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 25
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 36
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName in (\"GPU-PWR-CURR\", \"GPU-PWR-LIMIT-TOTAL-MAX\")\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| where isfinite(TelemetryValueNum)  // Filter out NaN/infinite values\r\n| summarize \r\n    PowerCurrent = case(\r\n        \"$aggregation\" == \"avg\", avgif(TelemetryValueNum, TelemetryName == \"GPU-PWR-CURR\"),\r\n        \"$aggregation\" == \"max\", maxif(TelemetryValueNum, TelemetryName == \"GPU-PWR-CURR\"),\r\n        \"$aggregation\" == \"min\", minif(TelemetryValueNum, TelemetryName == \"GPU-PWR-CURR\"),\r\n        avgif(TelemetryValueNum, TelemetryName == \"GPU-PWR-CURR\")\r\n    ),\r\n    PowerLimit = avgif(TelemetryValueNum, TelemetryName == \"GPU-PWR-LIMIT-TOTAL-MAX\")\r\n| extend value = case(\r\n    isnan(PowerCurrent) or isnan(PowerLimit) or PowerLimit <= 0, 0.0,\r\n    (PowerCurrent/PowerLimit)*100\r\n)\r\n| project value",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "GPU Power Utilization ($aggregation)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 25
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 36
+      },
+      "id": 19,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-UTIL-SM\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize gpu_util = case(\r\n    \"$aggregation\" == \"avg\", avg(TelemetryValueNum),\r\n    \"$aggregation\" == \"max\", max(TelemetryValueNum),\r\n    \"$aggregation\" == \"min\", min(TelemetryValueNum),\r\n    avg(TelemetryValueNum)  // default fallback\r\n)\r\n| project value = gpu_util",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "GPU SM Utilization ($aggregation)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 25
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 39
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where NodeId == '$node_id'\r\n| extend \r\n    VMCreationTime = todatetime(VirtualMachineCreationTime),\r\n    LiveDate = todatetime(LIVEDate),\r\n    NodeUptime = iff(isnotempty(todatetime(LIVEDate)), datetime_diff('day', now(), todatetime(LIVEDate)), 0),\r\n    VMUptime = iff(isnotempty(todatetime(VirtualMachineCreationTime)), datetime_diff('day', now(), todatetime(VirtualMachineCreationTime)), 0)\r\n| summarize \r\n    NodeUptimeDays = max(NodeUptime),\r\n    VMUptimeDays = max(VMUptime)",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Uptime (Days)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "NodeUptimeDays": "Node Uptime",
+              "VMUptimeDays": "VM Uptime"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "max": 1300,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GPU Health Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "OK": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-CLK-THROTTLE-REASON\"  // Adjust to correct metric name\r\n| where ResourceId == '$node_id'\r\n| summarize arg_max(TelemetryTimestamp, TelemetryValue) by InstanceId\r\n| project \r\n    InstanceId,\r\n    TelemetryValue,\r\n    TelemetryTimestamp\r\n\r\n// RackTelemetryGPUTelemetryFull\r\n// | where $__timeFilter(TelemetryTimestamp)\r\n// | where TelemetryName == \"GPU-HEALTH\"  // Adjust to correct metric name\r\n// | where ResourceId == '$node_id'\r\n// | project \r\n//     InstanceId,\r\n//     TelemetryValue",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Last GPU Clock Throttle Events",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "InstanceId"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "TelemetryTimestamp": false
+            },
+            "includeByName": {},
+            "indexByName": {
+              "InstanceId": 1,
+              "TelemetryTimestamp": 0,
+              "TelemetryValue": 2
+            },
+            "renameByName": {
+              "InstanceId": "GPU Instance",
+              "TelemetryTimestamp": "Time Stamp",
+              "TelemetryValue": "Throttle Event Code"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "max": 1300,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GPU Health Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "OK": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "id": 11,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-HEALTH\"  // Adjust to correct metric name\r\n| where ResourceId == '$node_id'\r\n| summarize arg_max(TelemetryTimestamp, TelemetryValue) by InstanceId\r\n| project \r\n    InstanceId,\r\n    TelemetryValue,\r\n    TelemetryTimestamp\r\n\r\n// RackTelemetryGPUTelemetryFull\r\n// | where $__timeFilter(TelemetryTimestamp)\r\n// | where TelemetryName == \"GPU-HEALTH\"  // Adjust to correct metric name\r\n// | where ResourceId == '$node_id'\r\n// | project \r\n//     InstanceId,\r\n//     TelemetryValue",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Last GPU Health Status",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "InstanceId"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "TelemetryTimestamp": false
+            },
+            "includeByName": {},
+            "indexByName": {
+              "InstanceId": 1,
+              "TelemetryTimestamp": 0,
+              "TelemetryValue": 2
+            },
+            "renameByName": {
+              "InstanceId": "GPU Instance",
+              "TelemetryTimestamp": "Time Stamp",
+              "TelemetryValue": "GPU Health Status"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "max": 1300,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GPU Health Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "OK": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "id": 25,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-NVLINK-STATUS\"  // Adjust to correct metric name\r\n| where ResourceId == '$node_id'\r\n| summarize arg_max(TelemetryTimestamp, TelemetryValue) by InstanceId\r\n| project \r\n    InstanceId,\r\n    TelemetryValue,\r\n    TelemetryTimestamp\r\n\r\n// RackTelemetryGPUTelemetryFull\r\n// | where $__timeFilter(TelemetryTimestamp)\r\n// | where TelemetryName == \"GPU-HEALTH\"  // Adjust to correct metric name\r\n// | where ResourceId == '$node_id'\r\n// | project \r\n//     InstanceId,\r\n//     TelemetryValue",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Last NVLink Status",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "InstanceId"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "TelemetryTimestamp": false
+            },
+            "includeByName": {},
+            "indexByName": {
+              "InstanceId": 1,
+              "TelemetryTimestamp": 0,
+              "TelemetryValue": 2
+            },
+            "renameByName": {
+              "InstanceId": "GPU Instance",
+              "TelemetryTimestamp": "Time Stamp",
+              "TelemetryValue": "GPU Health Status"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 6,
+      "panels": [],
+      "title": "GPU",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "rothz"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "// RackTelemetryGPUTelemetryFull\r\n// | where $__timeFilter(TelemetryTimestamp)\r\n// | where TelemetryName == \"GPU-CURR-CLK-MEM\"\r\n// | where ResourceId == '$node_id'\r\n// | extend TelemetryValueNum = todouble(TelemetryValue)\r\n// | project Time = TelemetryTimestamp, InstanceId, value = TelemetryValueNum\r\n// | order by Time asc\r\nRackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-CURR-CLK-MEM\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU Memory Clock",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 55
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-UTIL-SM\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU SM Utilization",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 63
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-TEMP-MEM\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU Memory Temp",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "rothz"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 63
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-CURR-CLK-SM\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU SM Clock",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 71
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-PWR-CURR\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU Power Usage",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 71
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-TEMP-GB-GPU\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPU Temperature",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Errors",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 79
+      },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-ECC-ERR-CTR-CE\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "SBE Persistent ECC Errors",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "joule"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 79
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-CTR-ENERGY\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = (avg_TelemetryValueNum / 10e3)\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total Energy Consumption",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Errors",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 87
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-ECC-ERR-CTR-UCE\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| project Time = TelemetryTimestamp, InstanceId, value = avg_TelemetryValueNum\r\n| order by Time asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "DBE Persistent ECC Errors",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 95
+      },
+      "id": 26,
+      "panels": [],
+      "title": "Infiniband",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "bytes out (-) / in (+)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 96
+      },
+      "id": 27,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where NodeId == '$node_id'\r\n| extend TelemetryValueNum = todouble(Bytes_Received)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(PreciseTimeStamp, $__timeInterval), NicName\r\n| extend NicNameWithDirection = strcat(NicName, \" - receive\")\r\n| project Time = PreciseTimeStamp, NicName = NicNameWithDirection, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where NodeId == '$node_id'\r\n| extend TelemetryValueNum = todouble(Bytes_Sent)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(PreciseTimeStamp, $__timeInterval), NicName\r\n| extend NicNameWithDirection = strcat(NicName, \" - sent\")\r\n| project Time = PreciseTimeStamp, NicName = NicNameWithDirection, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "IB Throughput (RX/TX)",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "NicName"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 96
+      },
+      "id": 28,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where NodeId == '$node_id'\r\n| extend TelemetryValueNum = todouble(Packets_Received_Errors)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(PreciseTimeStamp, $__timeInterval), NicName\r\n| project Time = PreciseTimeStamp, NicName, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Port Rcv Errors",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "NicName"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 104
+      },
+      "id": 29,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where NodeId == '$node_id'\r\n| extend TelemetryValueNum = todouble(Packets_Outbound_Errors)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(PreciseTimeStamp, $__timeInterval), NicName\r\n| project Time = PreciseTimeStamp, NicName, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Port Xmit Errors",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "NicName"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 104
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcfuntelemetry.eastus').database('HCATelemetry').Mlx5HpcTrafficCounters\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where NodeId == '$node_id'\r\n| extend TelemetryValueNum = todouble(Packets_Outbound_Discarded)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(PreciseTimeStamp, $__timeInterval), NicName\r\n| project Time = PreciseTimeStamp, NicName, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Port Xmit Discards",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "NicName"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 112
+      },
+      "id": 23,
+      "panels": [],
+      "title": "NVLink",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "bytes out (-) / in (+)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 113
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-NVLINK-THROUGHPUT-RX\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| extend InstanceIdWithDirection = strcat(InstanceId, \" - receive\")\r\n| project Time = TelemetryTimestamp, InstanceId = InstanceIdWithDirection, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "OpenAI": false,
+          "database": "defaultdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "RackTelemetryGPUTelemetryFull\r\n| where $__timeFilter(TelemetryTimestamp)\r\n| where TelemetryName == \"GPU-NVLINK-THROUGHPUT-TX\"\r\n| where ResourceId == '$node_id'\r\n| extend TelemetryValueNum = todouble(TelemetryValue)\r\n| summarize avg_TelemetryValueNum = avg(TelemetryValueNum) by bin(TelemetryTimestamp, $__timeInterval), InstanceId\r\n| extend InstanceIdWithDirection = strcat(InstanceId, \" - transmit\")\r\n| project Time = TelemetryTimestamp, InstanceId = InstanceIdWithDirection, value = avg_TelemetryValueNum\r\n| order by Time asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "NVLink Throughput (RX/TX)",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "InstanceId"
+          }
+        }
+      ],
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| distinct Region\r\n| order by Region asc",
+        "hide": 0,
+        "includeAll": true,
+        "label": "region",
+        "multi": true,
+        "name": "region",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| distinct Region\r\n| order by Region asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| extend DC = substring(Tenant, 0, 3)\r\n| distinct DC\r\n| order by DC asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "datacenter",
+        "multi": true,
+        "name": "datacenter",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| extend DC = substring(Tenant, 0, 3)\r\n| distinct DC\r\n| order by DC asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| distinct Tenant\r\n| order by Tenant asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| distinct Tenant\r\n| order by Tenant asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Customer\r\n| order by Customer asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "customer",
+        "multi": true,
+        "name": "customer",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Customer\r\n| order by Customer asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| distinct Platform\r\n| order by Platform asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "platform",
+        "multi": true,
+        "name": "platform",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| distinct Platform\r\n| order by Platform asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "08e715ed-bfbf-7859-36ec-afbb061e214f",
+          "value": "08e715ed-bfbf-7859-36ec-afbb061e214f"
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| where Platform in~ ($platform)\r\n| where IsNodeInService == true\r\n| distinct NodeId\r\n| order by NodeId asc\r\n",
+        "hide": 0,
+        "includeAll": false,
+        "label": "node_id",
+        "multi": false,
+        "name": "node_id",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| where Platform in~ ($platform)\r\n| where IsNodeInService == true\r\n| distinct NodeId\r\n| order by NodeId asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "max",
+          "value": "max"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "aggregation",
+        "options": [
+          {
+            "selected": false,
+            "text": "avg",
+            "value": "avg"
+          },
+          {
+            "selected": true,
+            "text": "max",
+            "value": "max"
+          },
+          {
+            "selected": false,
+            "text": "min",
+            "value": "min"
+          }
+        ],
+        "query": "avg,max,min",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Cluster View",
+  "uid": "cemixfipo7hfkacluster",
+  "version": 4,
+  "weekStart": ""
+}
