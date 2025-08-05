@@ -1161,7 +1161,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -1218,6 +1218,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "GPU Utilization",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -1678,7 +1679,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -1740,6 +1741,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Memory Copy Utilization",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -3219,7 +3221,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -3276,6 +3278,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Frequency",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -3455,7 +3458,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -3512,6 +3515,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Frequency",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -3953,7 +3957,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}﻿&﻿${cluster:queryparam}﻿&var-instance=ins${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -4010,6 +4014,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Utilization (Temp/Max Op Temp)",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -4190,7 +4195,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -4247,6 +4252,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Temperature",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -4452,7 +4458,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}\n"
                   }
                 ]
               }
@@ -4509,6 +4515,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Power Utilization (GPU Power Draw/Max Power Limit)",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
@@ -4688,7 +4695,7 @@
                   {
                     "targetBlank": true,
                     "title": "Node View",
-                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.hostname}\n"
+                    "url": "/d/9Qxi6EuNVsx/combined-node-ib-gpu-and-nvlink-metrics-dashboard?orgId=1&from=$__from&to=$__to&timezone=browser&${datasource:queryparam}&${cluster:queryparam}&var-instance=${__data.fields.Instance}"
                   }
                 ]
               }
@@ -4745,6 +4752,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Power",
+              "hostname": "Instance",
               "instance": "Instance"
             }
           }
