@@ -1,0 +1,1386 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 287,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    TotalClusters = dcount(Tenant),\r\n    NodesinService = dcountif(NodeId,IsNodeInService == true),\r\n    AllocatedNodes = dcountif(NodeId,IsNodeInService == true and IsHEN == false)\r\n    //CustomerNodes = dcountif(NodeId,IsNodeInService == true and IsCustomer== true)\r\n\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Fleet Summary",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "AllocatedNodes": 3,
+              "NodesinService": 2,
+              "TotalClusters": 0,
+              "TotalNodes": 1
+            },
+            "renameByName": {
+              "AllocatedNodes": "Allocated Nodes",
+              "NodesinService": "Nodes In Service",
+              "TotalClusters": "Total Number of Clusters",
+              "TotalNodes": "Total Number Of Nodes"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "// Use fixed reference time like your inspiration query\r\nlet reference_time = now();\r\nlet last_month = reference_time - 30d;\r\nlet last_week = reference_time - 7d;\r\nlet last_day = reference_time - 1d;\r\n\r\nlet base_filter = cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" and IsUtilityNode == false and CloudName == \"Public\"\r\n| where Region in~ ($region) | where Platform in~ ($platform) | where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter) | where Tenant in~ ($cluster);\r\n\r\n// Current data (using TimeWindowEnd like your inspiration)\r\nlet current_data = base_filter\r\n| where TimeWindowEnd between (reference_time - 4h .. reference_time)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Yesterday data (same pattern as inspiration)\r\nlet yesterday_data = base_filter\r\n| where TimeWindowEnd between (bin(last_day, 1d) .. bin(last_day, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Last week data\r\nlet last_week_data = base_filter\r\n| where TimeWindowEnd between (bin(last_week, 1d) .. bin(last_week, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Last month data\r\nlet last_month_data = base_filter\r\n| where TimeWindowEnd between (bin(last_month, 1d) .. bin(last_month, 1d) + 1d)\r\n| summarize arg_max(TimeWindowEnd, *) by NodeId\r\n| summarize Total = count(), NISCount = countif(IsNodeInService)\r\n| extend NIS_Percent = iff(Total > 0, round(NISCount / todouble(Total) * 100, 2), 0.0);\r\n\r\n// Calculate changes\r\nlet current_nis = toscalar(current_data | project NIS_Percent);\r\nlet yesterday_nis = toscalar(yesterday_data | project NIS_Percent);\r\nlet last_week_nis = toscalar(last_week_data | project NIS_Percent);\r\nlet last_month_nis = toscalar(last_month_data | project NIS_Percent);\r\n\r\nprint \r\n    DoD = round(current_nis - yesterday_nis, 2),\r\n    WoW = round(current_nis - last_week_nis, 2),\r\n    MoM = round(current_nis - last_month_nis, 2)",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Nodes In Service (NIS) Change (%)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "AllocatedNodes": 3,
+              "NodesinService": 2,
+              "TotalClusters": 0,
+              "TotalNodes": 1
+            },
+            "renameByName": {
+              "AllocatedNodes": "Allocated Nodes",
+              "NodesinService": "Nodes In Service",
+              "TotalClusters": "Total Number of Clusters",
+              "TotalNodes": "Total Number Of Nodes"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "#EF843C",
+                "value": 10
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 15
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "",
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n//| where SnapshotTime > ago(24h)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    OFRCount = dcountif(NodeId,State == \"OFR\"),\r\n    InfinibandCount = dcountif(NodeId,State == \"InfiniBand RCA\"),\r\n    TransitionCount = dcountif(NodeId,State == \"Transition\"),\r\n    ValidationCount = dcountif(NodeId,State == \"Validation\")\r\n| extend OFR = 100.0 * OFRCount / TotalNodes\r\n| extend Infiniband = 100.0 * InfinibandCount / TotalNodes\r\n| extend Transition = 100.0 * TransitionCount / TotalNodes\r\n| extend Validation = 100.0 * ValidationCount / TotalNodes\r\n| project OFR, Infiniband, Transition, Validation",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Out of Service (OOS) Breakdown",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "NIS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "Infiniband": 2,
+              "OFR": 0,
+              "Transition": 3,
+              "Validation": 1
+            },
+            "renameByName": {
+              "HEN": "% HEN",
+              "Infiniband": "Infiniband RCA",
+              "MTRA": "",
+              "NIS": "% NIS",
+              "OFR": "Out for Repair",
+              "SLAStatus": "SLA Status",
+              "Transition": "Transition",
+              "Validation": "HPC Perfgate Validation"
+            }
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes In Service(NIS)"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "to": 95
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 95,
+                      "result": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SLA Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "At Risk": {
+                        "color": "red",
+                        "index": 1
+                      },
+                      "Healthy": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    NodesInService = dcountif(NodeId, IsNodeInService == true),\r\n    HealthyEmptyNodes = dcountif(NodeId, IsHEN == true)\r\n    by Platform\r\n| extend \r\n    NIS = round(100.0 * NodesInService / TotalNodes, 1),\r\n    HEN = round(100.0 * HealthyEmptyNodes / TotalNodes, 1)\r\n| extend \r\n    SLA95Count = ceiling(TotalNodes * 0.95),  // 95% of total nodes\r\n    NodeDelta95 = NodesInService - ceiling(TotalNodes * 0.95)  // How many nodes above/below 95%\r\n| extend SLAStatus = iff(NIS < 95, \"At Risk\", \"Healthy\")\r\n| project Platform, NIS, HEN, NodeDelta95, SLAStatus, TotalNodes, NodesInService, SLA95Count",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Platform Health Summary",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "NIS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "NodesInService": true,
+              "SLA95Count": true,
+              "TotalNodes": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "HEN": "% Healthy Empty Nodes (HEN)",
+              "MTRA": "",
+              "NIS": "% Nodes In Service (NIS)",
+              "NodeDelta95": "95% SLA Node Delta",
+              "SLAStatus": "SLA Status"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes In Service(NIS)"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "to": 95
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 95,
+                      "result": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SLA Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "At Risk": {
+                        "color": "red",
+                        "index": 1
+                      },
+                      "Healthy": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Fault Description"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 204
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "// cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n// | where $__timeFilter(SnapshotTime)\r\n// | where Region in~ ($region) \r\n// | where Platform in~ ($platform) \r\n// | where Customer in~ ($customer) \r\n// | where FaultCode > 0 \r\n// | where substring(Tenant, 0, 3) in ($datacenter) \r\n// | where Tenant in~ ($cluster)\r\n// | where IsNodeInService == false \r\n// | summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n// | extend FaultCategory = case(\r\n//     FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n//     FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n//     FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n//     FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n//     FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n//     FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n//     FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n//     FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n//     FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n//     FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n//     FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n//     FaultCode > 70009, \"Special Fault Codes\",\r\n//     \"Unknown\"\r\n// )\r\n// | summarize \r\n// FaultCount = dcount(NodeId),\r\n// TotalOccurrences = count()\r\n// by Platform, FaultDescription, FaultCode, FaultCategory\r\n// | partition by Platform (sort by FaultCount desc | take $top_n_faults)\r\n// | join kind=leftouter (\r\n//     cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n//     | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n// ) on FaultCode\r\n// | project Platform, FaultDescription, FaultCount, FaultCode, FaultCategory, SP3FaultReason, SourceTeam, SMETeam\r\n// | sort by Platform, FaultCount desc\r\ncluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region) \r\n| where Platform in~ ($platform) \r\n| where Customer in~ ($customer) \r\n| where FaultCode > 0 \r\n| where substring(Tenant, 0, 3) in ($datacenter) \r\n| where Tenant in~ ($cluster)\r\n| where IsNodeInService == false \r\n//| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| extend FaultCategory = case(\r\n    FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n    FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n    FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n    FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n    FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n    FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n    FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n    FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n    FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n    FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n    FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n    FaultCode > 70009, \"Special Fault Codes\",\r\n    \"Unknown\"\r\n)\r\n| summarize \r\n    FaultCount = dcount(NodeId),\r\n    TotalOccurrences = count(),\r\n    SampleFaultDescription = take_any(FaultDescription)  // Get one example description\r\n    by Platform, FaultCode, FaultCategory\r\n| partition by Platform (sort by FaultCount desc | take $top_n_faults)\r\n| join kind=leftouter (\r\n    cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n    | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n) on FaultCode\r\n| project Platform, FaultCode, FaultCount, FaultCategory, SampleFaultDescription, SP3FaultReason, SourceTeam, SMETeam\r\n| sort by Platform, FaultCount desc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Top $top_n_faults DCM Faults per Platform",
+      "transformations": [
+        {
+          "disabled": true,
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "FaultCount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Rank": true,
+              "SourceTeam": true,
+              "dummy": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "FaultCategory": 2,
+              "FaultCode": 1,
+              "FaultCount": 5,
+              "Platform": 0,
+              "SMETeam": 7,
+              "SP3FaultReason": 3,
+              "SampleFaultDescription": 4,
+              "SourceTeam": 6
+            },
+            "renameByName": {
+              "FaultCategory": "Fault Category",
+              "FaultCode": "Fault Code",
+              "FaultCount": "Fault Count",
+              "FaultDescription": "Fault Description",
+              "MTRA": "",
+              "NIS": "Nodes In Service(NIS)",
+              "SLAStatus": "SLA Status",
+              "SMETeam": "SME Team",
+              "SP3FaultReason": "Fault Reason",
+              "SampleFaultDescription": "Fault Description",
+              "SourceTeam": "Source Team",
+              "TotalOccurrences": "Total Occurences"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes In Service(NIS)"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "to": 95
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 95,
+                      "result": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SLA Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "At Risk": {
+                        "color": "red",
+                        "index": 1
+                      },
+                      "Healthy": {
+                        "color": "green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Fault Description"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 204
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.2.8",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "cluster('hpcguesthealthsignals.eastus.kusto.windows.net').database('guesthealthreporting-telemetry').VmRequestDetails\r\n| where $__timeFilter(PreciseTimestamp)\r\n| where ObservationStatus != \"Healthy\"\r\n| join kind=inner (\r\n    cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n    | where Region in~ ($region) | where Platform in~ ($platform) | where Customer in~ ($customer)\r\n    | where substring(Tenant, 0, 3) in ($datacenter) | where Tenant in~ ($cluster)\r\n    | summarize arg_max(SnapshotTime, Platform) by NodeId\r\n) on NodeId\r\n| summarize \r\n    IssueCount = dcount(NodeId),\r\n    TotalObservations = count(),\r\n    SampleReason = take_any(RmaReason)\r\n    by Platform, ObservationType, ObservationStatus\r\n| partition by Platform (sort by IssueCount desc | take $top_n_faults)\r\n| sort by Platform, IssueCount desc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Top $top_n_faults GHR Issues per Platform",
+      "transformations": [
+        {
+          "disabled": true,
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "FaultCount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Rank": true,
+              "SourceTeam": true,
+              "TotalObservations": true,
+              "dummy": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "IssueCount": 4,
+              "ObservationStatus": 3,
+              "ObservationType": 1,
+              "Platform": 0,
+              "SampleReason": 2,
+              "TotalObservations": 5
+            },
+            "renameByName": {
+              "FaultCategory": "Fault Category",
+              "FaultCode": "Fault Code",
+              "FaultCount": "Fault Count",
+              "FaultDescription": "Fault Description",
+              "IssueCount": "Issue Count",
+              "MTRA": "",
+              "NIS": "Nodes In Service(NIS)",
+              "ObservationStatus": "Observation Status",
+              "ObservationType": "Observation Category",
+              "SLAStatus": "SLA Status",
+              "SMETeam": "SME Team",
+              "SP3FaultReason": "Fault Reason",
+              "SampleFaultDescription": "Fault Description",
+              "SampleReason": "Description",
+              "SourceTeam": "Source Team",
+              "TotalObservations": "",
+              "TotalOccurrences": "Total Occurences"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| distinct Region\r\n| order by Region asc",
+        "hide": 0,
+        "includeAll": true,
+        "label": "region",
+        "multi": true,
+        "name": "region",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| distinct Region\r\n| order by Region asc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| extend DC = substring(Tenant, 0, 3)\r\n| distinct DC\r\n| order by DC asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "datacenter",
+        "multi": true,
+        "name": "datacenter",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| extend DC = substring(Tenant, 0, 3)\r\n| distinct DC\r\n| order by DC asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| distinct Tenant\r\n| order by Tenant asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| distinct Tenant\r\n| order by Tenant asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Customer\r\n| order by Customer asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "customer",
+        "multi": true,
+        "name": "customer",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Customer\r\n| order by Customer asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "fem88lm00ugowb"
+        },
+        "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| distinct Platform\r\n| order by Platform asc\r\n",
+        "hide": 0,
+        "includeAll": true,
+        "label": "platform",
+        "multi": true,
+        "name": "platform",
+        "options": [],
+        "query": {
+          "OpenAI": false,
+          "azureLogAnalytics": {
+            "query": "",
+            "resources": []
+          },
+          "clusterUri": "",
+          "database": "blobstreamingdb",
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "5.1.1",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| distinct Platform\r\n| order by Platform asc\r\n",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "subscription": "E3786699-5116-4DC9-82C6-A8AAB043FB85"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "10",
+          "value": "10"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "top_n_faults",
+        "multi": false,
+        "name": "top_n_faults",
+        "options": [
+          {
+            "selected": false,
+            "text": "3",
+            "value": "3"
+          },
+          {
+            "selected": false,
+            "text": "5",
+            "value": "5"
+          },
+          {
+            "selected": true,
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "selected": false,
+            "text": "15",
+            "value": "15"
+          },
+          {
+            "selected": false,
+            "text": "20",
+            "value": "20"
+          }
+        ],
+        "query": "3,5,10,15,20",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Fleet View",
+  "uid": "cemixfipo7hfka",
+  "version": 37,
+  "weekStart": ""
+}
