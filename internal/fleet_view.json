@@ -19,8 +19,46 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 287,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Cluster View Dashboard",
+      "tooltip": "Redirect to Cluster View Dashboard",
+      "type": "link",
+      "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&${cluster:queryparam}&${datacenter:queryparam}&${platform:queryparam}"
+    }
+  ],
   "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Access Requirements\n\n### GDCO Database Access\nFor access to the GDCO Database, please visit: [Accessing Data Galaxy](https://microsoft.sharepoint.com/sites/DataGalaxy/SitePages/Accessing-Data-Galaxy.aspx?xsdata=MDV8MDJ8fGQxMzdiODhjZWI2ODQ3MTY0ZTA4MDhkZGNlYzAxNWQ1fDcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3fDB8MHw2Mzg4OTQwNDY1NTE4MjY5MzN8VW5rbm93bnxWR1ZoYlhOVFpXTjFjbWwwZVZObGNuWnBZMlY4ZXlKRFFTSTZJbFJsWVcxelgwRlVVRk5sY25acFkyVmZVMUJQVEU5R0lpd2lWaUk2SWpBdU1DNHdNREF3SWl3aVVDSTZJbGRwYmpNeUlpd2lRVTRpT2lKUGRHaGxjaUlzSWxkVUlqb3hNWDA9fDF8TDJOb1lYUnpMekU1T20xbFpYUnBibWRmV1hwVk1FOVVhelJQVkZGMFdUSmFiRTlETURCT1IxWnRURlJzYVUxcVdYUmFSR016VGxSSk0wNUVVVEJOVkZVeVFIUm9jbVZoWkM1Mk1pOXRaWE56WVdkbGN5OHhOelV6T0RBM09EVTBNemd4fGIyOGRiNGIxYzhiMjRmYzNmMmUzMDhkZGNlYzAxNWQ0fGQxY2ZhN2JlN2NjNDQxZGY5YWZmZjM0NGM5YmM5NDli&sdata=MEVCSFRZeEFjQzN5cVc1OXdaSS9DQjkwQ0dramdIbWttN1V3ZXJGTHJEYz0%3D&ovuser=72f988bf-86f1-41af-91ab-2d7cd011db47%2Cdakpan%40microsoft.com&OR=Teams-HL&CT=1753907875013&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiI0OS8yNTA3MDMxODgwNiIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D&SafelinksUrl=https%3A%2F%2Fmicrosoft.sharepoint.com%2Fsites%2FDataGalaxy%2FSitePages%2FAccessing-Data-Galaxy.aspx#requesting-access-to-common-datasets)\n\n### Security Group Access\nPlease join the **SG - HPC Fleet Owners** Security Group for access if any errors are seen in the panels.\n\n# Azure DCM, TM, and Hardware State Management Guide\n\n## Overview\n\nIn a nutshell, **DCM (Datacenter Manager)** is responsible for driving a new hardware resource (blade or device) to **Production** in Azure. Once in Production, it will be picked up by the **CM (Container Manager)** team, to prepare the resource to be **Ready** for customer VMs. \n\n> **Note:** CM is also known as **TM (Tenant Manager)**.\n\n## Dual State Machine Architecture\n\nThere are **two separate state machines** existing at the same time for all hardware in Azure: one for DCM and one for CM/TM. This means that every resource has **two states at any given time**. \n\n**Example:** A device can be in _Production_ in DCM and in _Raw_ in CM simultaneously.\n\n<img src=\"https://msazure.visualstudio.com/b32aa71e-8ed2-41b2-9d77-5bc261222004/_apis/git/repositories/4482edfe-a7ee-4522-9ec5-48442a1579d5/Items?path=/.attachments/DCM-Cycle-54f51fed-716e-4c92-ad3b-6cb35678f304.gif&download=false&resolveLfs=true&%24format=octetStream&api-version=5.0-preview.1&sanitize=true&versionDescriptor.version=wikiMaster\">\n\n---\n\n## Tenant Manager (TM/CM) States\n\n### TM Availability States\n**Definition:** Whether or not the node can accept a VM\n\n| State | Description |\n|-------|-------------|\n| **Available** | Can take a new VM |\n| **Unallocatable (UA)** | Don't allow new VMs, existing ones can stay. Generally something is wrong, and we want the node back |\n| **Faulted** | Something is unexpectedly wrong here. Auto-recovery attempted |\n| **OutForRepair (OFR)** | Node is unhealthy and unavailable; it has been passed to DCM |\n\n### TM Node States\n**Definition:** Whether or not the node is healthy and running\n\n| State | Description |\n|-------|-------------|\n| **Ready** | Happy & Healthy, the goal state |\n| **HumanInvestigate (HI)** | Called HumanInvestigate but rarely do humans investigate in this state. Often transitionary in which Fabric will attempt auto-recovery or the nodes end up OFR. **HI/Faulted is a very common tuple** |\n| **OutForRepair (OFR)** | Node is unhealthy and unavailable, it has been passed to DCM |\n\n---\n\n## DCM Lifecycle States\n\n### Major DCM States\n\n| State | Description |\n|-------|-------------|\n| **Production** | The node has been passed back to TM, **the goal state** |\n| **Diagnostics** | We are running automated diagnostics to find hardware faults |\n| **OutForRepair** | A node has a FaultCode as the result of a DCM activity. Most commonly from diagnostics and typically results in a repair ticket (GDCO Ticket) |\n| **Configuration** | Node is coming back from OFR, basic checks like wires are plugged in and MAC discovery to establish networking |\n| **Certification** | Diagnostics Round 2, make sure that the repair actually fixed the problem. Catch any other problems that might arise |\n| **Preparation** | Establish basically everything that is needed to pass back to Tenant Manager. Firmware, bitlocker, etc. |\n| **Unavailable** | The resource is unavailable, typically because an associated resource is not in production. Such as a Blade and its SoC |\n\n### Other DCM States\n\n| State | Description |\n|-------|-------------|\n| **Triage** | Holding state, manual investigations |\n\n---\n\n## Detailed DCM State Workflow\n\n### Configuration (Config)\n- Wire checking (power, network and serial wires)\n- Discovering/setting the MAC address\n\n### Certification (Cert)\n- Functional checks\n- Performance requirements\n\n### Preparation (Prep)\nHere, whatever is needed to make the resource Production-ready is done:\n- **MOS (Maintenance OS, aka WinPE)** preparation\n- **Firmware** preparation\n- **BitLocker** preparation\n- And much more...\n\n**Failure Handling:**\n- Retry 3 times (by moving to **Preparation Suspect** state)\n- If still fails after retries: move to **Diagnostics**\n\n### Production (Prod)\n- Ready for consumption by CM\n- TM calls into DCM every 15 seconds: \"give me the updated inventory\"\n\n### Diagnostics\nWhen a resource is marked as unhealthy in CM (HumanInvestigate), it is sent to **Diagnostics** in DCM to figure out what the problem is.\n- Burden here to find out why there is a problem\n- Hardware fault codes are created to send the resource to OFR\n\n### Out for Repair (OFR)\nHardware fault code is set on the resource for some repair to be done. The list of possible fault codes can be found in the [FaultDescriptions.xml](https://msazure.visualstudio.com/One/_git/Azure-Compute-Move?path=%2Fsrc%2FServices%2FHardware%2FRMA%2Fconfig%2FResources%2FFaultDescriptions.xml&version=GBmaster) file of the Azure-Compute-Move repository.\n\n---\n\n## Key Blade and SoC Relationship Learnings\n\n### Critical State Transitions\n\n1. **When host blade is returned by TM back to DCM** by calling `ReturnResource API`:\n   - Host blade transitions from **Production** → **Diagnostics** state in DCM\n   - **SoC remains in Production state**\n\n2. **Host blade offline state transitions:**\n   - Host blade can transition through other offline states such as **Configuration**, **Certification**, and **Preparation**\n   - **SoC will still remain in Production state**\n   - **Exception:** When host blade moves to **OFR** state\n\n3. **OFR State Exception:**\n   - When host blade transitions to **OFR** state in DCM\n   - **SoC transitions to Unavailable state**\n\n### State Synchronization Rules\n\n| Host Blade DCM State | SoC DCM State | Notes |\n|---------------------|---------------|-------|\n| Production → Diagnostics | Production | SoC stays in Production |\n| Configuration | Production | SoC stays in Production |\n| Certification | Production | SoC stays in Production |\n| Preparation | Production | SoC stays in Production |\n| **OutForRepair (OFR)** | **Unavailable** | **Exception: SoC changes state** |\n\n---\n## OOS Breakdown\n<img src=\"https://dev.azure.com/AzureHPC/bf85ee8b-05da-4f1b-a4c8-19399f246acd/_apis/git/repositories/157ee383-6f13-49d0-af38-0e19a369d125/Items?path=/.attachments/Screenshot%202025-07-26%20at%208.50.57%E2%80%AFPM-30e335c9-415e-4c78-a63c-b6b9f9a37c68.png&download=false&resolveLfs=true&%24format=octetStream&api-version=5.0-preview.1&sanitize=true&versionDescriptor.version=wikiMaster\">",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.6.3",
+      "title": "README",
+      "type": "text"
+    },
     {
       "datasource": {
         "default": false,
@@ -37,8 +75,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -49,7 +86,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 14
       },
       "id": 7,
       "options": {
@@ -69,7 +106,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -93,7 +130,7 @@
             }
           },
           "pluginVersion": "5.1.1",
-          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    TotalClusters = dcount(Tenant),\r\n    NodesinService = dcountif(NodeId,IsNodeInService == true),\r\n    AllocatedNodes = dcountif(NodeId,IsNodeInService == true and IsHEN == false)\r\n    //CustomerNodes = dcountif(NodeId,IsNodeInService == true and IsCustomer== true)\r\n\r\n",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    TotalClusters = dcount(Tenant),\r\n    NodesinService = dcountif(NodeId,IsNodeInService == true),\r\n    AllocatedNodes = dcountif(NodeId,IsNodeInService == true and IsCustomer == true),\r\n    HEN = dcountif(NodeId,IsNodeInService == true and IsHEN == true)\r\n    //CustomerNodes = dcountif(NodeId,IsNodeInService == true and IsCustomer== true)\r\n\r\n",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -115,7 +152,7 @@
               "TotalNodes": 1
             },
             "renameByName": {
-              "AllocatedNodes": "Allocated Nodes",
+              "AllocatedNodes": "Customer VMs",
               "NodesinService": "Nodes In Service",
               "TotalClusters": "Total Number of Clusters",
               "TotalNodes": "Total Number Of Nodes"
@@ -142,8 +179,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "green",
@@ -159,7 +195,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 20
       },
       "id": 3,
       "options": {
@@ -179,7 +215,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -251,8 +287,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -271,24 +306,29 @@
                 "value": 20
               }
             ]
-          },
-          "unit": "percent"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 9,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 26
       },
-      "id": 6,
+      "id": 13,
       "options": {
         "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
         "maxVizHeight": 300,
         "minVizHeight": 16,
         "minVizWidth": 8,
-        "namePlacement": "auto",
+        "namePlacement": "top",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [],
@@ -299,7 +339,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -325,7 +365,7 @@
           },
           "hide": false,
           "pluginVersion": "5.1.1",
-          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n//| where SnapshotTime > ago(24h)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    OFRCount = dcountif(NodeId,State == \"OFR\"),\r\n    InfinibandCount = dcountif(NodeId,State == \"InfiniBand RCA\"),\r\n    TransitionCount = dcountif(NodeId,State == \"Transition\"),\r\n    ValidationCount = dcountif(NodeId,State == \"Validation\")\r\n| extend OFR = 100.0 * OFRCount / TotalNodes\r\n| extend Infiniband = 100.0 * InfinibandCount / TotalNodes\r\n| extend Transition = 100.0 * TransitionCount / TotalNodes\r\n| extend Validation = 100.0 * ValidationCount / TotalNodes\r\n| project OFR, Infiniband, Transition, Validation",
+          "query": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where NodeCategory == \"Compute\" \r\n    and IsUtilityNode == false\r\n    and CloudName == \"Public\"\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| extend EffectiveState = iff(isempty(Substate) or Substate == \"N/A\", State, Substate)\r\n| summarize \r\n    TotalNodes = dcount(NodeId),\r\n    OFRCount = dcountif(NodeId, EffectiveState == \"OFR\"),\r\n    InfinibandCount = dcountif(NodeId, EffectiveState == \"InfiniBand RCA\"),\r\n    HPCNVLCount = dcountif(NodeId, EffectiveState == \"HPC NVL RCA\"),\r\n    HPCIBCount = dcountif(NodeId, EffectiveState == \"HPC IB RCA\"),\r\n    TransitionCount = dcountif(NodeId, EffectiveState == \"Transition\"),\r\n    ValidationCount = dcountif(NodeId, EffectiveState == \"Validation\")\r\n| extend OFR = OFRCount\r\n| extend Infiniband = InfinibandCount\r\n| extend HPCNVL = HPCNVLCount\r\n| extend HPCIB = HPCIBCount\r\n| extend Transition =  TransitionCount \r\n| extend Validation = ValidationCount \r\n| project OFR, Infiniband, HPCNVL, HPCIB, Transition, Validation\r\n\r\n\r\n//PERCENTAGE calculation below\r\n// | extend OFR = 100.0 * OFRCount / TotalNodes\r\n// | extend Infiniband = 100.0 * InfinibandCount / TotalNodes\r\n// | extend HPCNVL = 100.0 * HPCNVLCount / TotalNodes\r\n// | extend HPCIB = 100.0 * HPCIBCount / TotalNodes\r\n// | extend Transition = 100.0 * TransitionCount / TotalNodes\r\n// | extend Validation = 100.0 * ValidationCount / TotalNodes\r\n// | project OFR, Infiniband, HPCNVL, HPCIB, Transition, Validation",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -333,7 +373,7 @@
           "resultFormat": "table"
         }
       ],
-      "title": "Out of Service (OOS) Breakdown",
+      "title": "OOS Categories Snapshot (# of Nodes)",
       "transformations": [
         {
           "id": "sortBy",
@@ -350,17 +390,24 @@
         {
           "id": "organize",
           "options": {
-            "excludeByName": {},
+            "excludeByName": {
+              "HPCNVL": false,
+              "Infiniband": true
+            },
             "includeByName": {},
             "indexByName": {
+              "HPCIB": 4,
+              "HPCNVL": 3,
               "Infiniband": 2,
               "OFR": 0,
-              "Transition": 3,
+              "Transition": 5,
               "Validation": 1
             },
             "renameByName": {
               "HEN": "% HEN",
-              "Infiniband": "Infiniband RCA",
+              "HPCIB": "Infiniband",
+              "HPCNVL": "NVLink",
+              "Infiniband": "Infiniband",
               "MTRA": "",
               "NIS": "% NIS",
               "OFR": "Out for Repair",
@@ -372,6 +419,326 @@
         }
       ],
       "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "log"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 12,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "State",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.6.3",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "// GDCO Ticket Count Summary - Pivot clusters as columns, states as rows\r\nlet nodes = cluster('supermonkusto.eastus').database('MissionControl').GetNodeInventory\r\n| where substring(ClusterName, 0, 3) in ($datacenter)\r\n| where ClusterName in~ ($cluster);\r\n\r\ncluster('datagalaxy.westus3.kusto.windows.net').database('COIDG').TicketsSnapshot\r\n| where State !in (\"Canceled\")\r\n| where AssetName in (nodes | project NodeId)\r\n| summarize arg_max(AzureCreationDate, *) by TicketId\r\n| join kind = inner nodes on $left.AssetName == $right.NodeId\r\n| summarize Count = count() by ClusterName, State\r\n| evaluate pivot(ClusterName, sum(Count))",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "GDCO Tickets by State - Count by Cluster",
+      "transformations": [
+        {
+          "disabled": true,
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "StateAggregate"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "CleanedReason": false,
+              "FaultCategory": true,
+              "HawkeyeRCAs": true,
+              "NodeListStr": true,
+              "NodeStatesStr": true,
+              "Rank": true,
+              "ResourceListStr": true,
+              "SourceTeam": true,
+              "dummy": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "CleanedReason": 3,
+              "EscalateTo": 5,
+              "FaultCode": 2,
+              "HawkeyeRCAs": 4,
+              "NodeListStr": 7,
+              "NodeStatesStr": 6,
+              "Nodes": 1,
+              "Platform": 0
+            },
+            "renameByName": {
+              "FaultCategory": "Fault Category",
+              "FaultCode": "Fault Code",
+              "FaultCount": "Fault Count",
+              "FaultDescription": "Fault Description",
+              "MTRA": "",
+              "NIS": "Nodes In Service(NIS)",
+              "SLAStatus": "SLA Status",
+              "SMETeam": "SME Team",
+              "SP3FaultReason": "Fault Reason",
+              "SampleFaultDescription": "Fault Description",
+              "SourceTeam": "Source Team",
+              "TotalOccurrences": "Total Occurences"
+            }
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cluster"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Cluster view",
+                    "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}&to=${__to}&var-cluster=${__data.fields.Cluster}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.6.3",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "// Customer and SKU breakdown by node count - Grafana formatted\r\nlet container_lookup = cluster('azcore.centralus.kusto.windows.net').database('AzureCP').MycroftContainerSnapshot_Latest\r\n| where IsTombstoned == false\r\n| where substring(ClusterName, 0, 3) in ($datacenter)\r\n| where ClusterName in~ ($cluster)\r\n| summarize count() by PolicyName, SubscriptionId, ClusterName\r\n| project SubscriptionId, SKU = PolicyName, ClusterName, C = count_;\r\n\r\nlet customer_table_filtered = cluster('acciacudfollower.kusto.windows.net').database('CommonDims').Product360CustomerSubscriptions\r\n| where SubscriptionId in (container_lookup | summarize by SubscriptionId) \r\n| project SubscriptionId, TPID, TPNameTranslated;\r\n\r\ncontainer_lookup\r\n| join kind=leftouter (customer_table_filtered) on SubscriptionId\r\n| summarize NodeCount = sum(C) by TPID, TPNameTranslated, SKU, ClusterName\r\n| project-reorder \r\n    ClusterName,\r\n    TPNameTranslated, \r\n    NodeCount, \r\n    SKU,\r\n    TPID\r\n| order by NodeCount desc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Customer Node Allocation Breakdown",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "NIS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "NodesInService": true,
+              "SLA95Count": true,
+              "TPID": true,
+              "TotalNodes": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "ClusterName": "Cluster",
+              "HEN": "% Healthy Empty Nodes (HEN)",
+              "MTRA": "",
+              "NIS": "% Nodes In Service (NIS)",
+              "NodeCount": "Nodes",
+              "NodeDelta95": "95% SLA Node Delta",
+              "SKU": "",
+              "SLAStatus": "SLA Status",
+              "TPNameTranslated": "Customer Name"
+            }
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "datasource": {
@@ -410,7 +777,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Nodes In Service(NIS)"
+              "options": "% Nodes In Service (NIS)"
             },
             "properties": [
               {
@@ -445,6 +812,10 @@
                 "value": {
                   "type": "color-text"
                 }
+              },
+              {
+                "id": "unit",
+                "value": "percent"
               }
             ]
           },
@@ -479,6 +850,18 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% Healthy Empty Nodes (HEN)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
           }
         ]
       },
@@ -486,9 +869,15 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 51
       },
       "id": 2,
+      "links": [
+        {
+          "title": "Cluster View",
+          "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&${cluster:queryparam}&${datacenter:queryparam}&${platform:queryparam}"
+        }
+      ],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -501,7 +890,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -583,13 +972,14 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "left",
             "cellOptions": {
               "type": "auto"
             },
             "filterable": true,
-            "inspect": false
+            "inspect": true
           },
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -689,6 +1079,24 @@
                 "value": 204
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cluster"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Cluster View",
+                    "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&var-cluster=${__data.fields.Cluster}&var-platform=﻿${__data.fields.Platform}&${datacenter:queryparam}"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -696,9 +1104,16 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 59
       },
       "id": 4,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cluster View",
+          "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&${cluster:queryparam}&${datacenter:queryparam}&${platform:queryparam}"
+        }
+      ],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -712,7 +1127,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -738,7 +1153,7 @@
           },
           "hide": false,
           "pluginVersion": "5.1.1",
-          "query": "// cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n// | where $__timeFilter(SnapshotTime)\r\n// | where Region in~ ($region) \r\n// | where Platform in~ ($platform) \r\n// | where Customer in~ ($customer) \r\n// | where FaultCode > 0 \r\n// | where substring(Tenant, 0, 3) in ($datacenter) \r\n// | where Tenant in~ ($cluster)\r\n// | where IsNodeInService == false \r\n// | summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n// | extend FaultCategory = case(\r\n//     FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n//     FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n//     FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n//     FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n//     FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n//     FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n//     FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n//     FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n//     FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n//     FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n//     FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n//     FaultCode > 70009, \"Special Fault Codes\",\r\n//     \"Unknown\"\r\n// )\r\n// | summarize \r\n// FaultCount = dcount(NodeId),\r\n// TotalOccurrences = count()\r\n// by Platform, FaultDescription, FaultCode, FaultCategory\r\n// | partition by Platform (sort by FaultCount desc | take $top_n_faults)\r\n// | join kind=leftouter (\r\n//     cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n//     | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n// ) on FaultCode\r\n// | project Platform, FaultDescription, FaultCount, FaultCode, FaultCategory, SP3FaultReason, SourceTeam, SMETeam\r\n// | sort by Platform, FaultCount desc\r\ncluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region) \r\n| where Platform in~ ($platform) \r\n| where Customer in~ ($customer) \r\n| where FaultCode > 0 \r\n| where substring(Tenant, 0, 3) in ($datacenter) \r\n| where Tenant in~ ($cluster)\r\n| where IsNodeInService == false \r\n//| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| extend FaultCategory = case(\r\n    FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n    FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n    FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n    FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n    FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n    FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n    FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n    FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n    FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n    FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n    FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n    FaultCode > 70009, \"Special Fault Codes\",\r\n    \"Unknown\"\r\n)\r\n| summarize \r\n    FaultCount = dcount(NodeId),\r\n    TotalOccurrences = count(),\r\n    SampleFaultDescription = take_any(FaultDescription)  // Get one example description\r\n    by Platform, FaultCode, FaultCategory\r\n| partition by Platform (sort by FaultCount desc | take $top_n_faults)\r\n| join kind=leftouter (\r\n    cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n    | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n) on FaultCode\r\n| project Platform, FaultCode, FaultCount, FaultCategory, SampleFaultDescription, SP3FaultReason, SourceTeam, SMETeam\r\n| sort by Platform, FaultCount desc",
+          "query": "// Use Grafana time range and filters - Complete Parse_FaultInfo implementation WITH PLATFORM\r\ncluster('azurecm').database('AzureCM').LogNodeSnapshot\r\n| where $__timeFilter(PreciseTimeStamp)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Region in~ ($region)\r\n| where CloudName == \"Public\"\r\n| summarize arg_max(PreciseTimeStamp, *) by nodeId\r\n| where isnotempty(faultInfo)\r\n| extend FaultInfo = tostring(faultInfo)\r\n// Parse JSON and extract basic fields (all your exact parsing logic)\r\n| extend json = parse_json(FaultInfo)\r\n| extend ReportReason = tostring(json.Reason)\r\n| extend json = iff(ReportReason startswith \"{\", parse_json(ReportReason), json)\r\n| extend json_ReportReason = tostring(json.Reason)\r\n| parse ReportReason with * \"\\\"Reason\\\":\\\"\" ParsedReason \"\\\"\" *\r\n| extend new_ReportReason = iff(ReportReason startswith \"{\" and isempty(json_ReportReason), ParsedReason, json_ReportReason)\r\n| extend ReportReason = iff(ReportReason startswith \"{\", new_ReportReason, ReportReason)\r\n| extend FaultCode = toint(json.FaultCode)\r\n| extend FaultTime = todatetime(json.Time)\r\n| extend EscalateTo = replace_string(extract('EscalateTo\\\",\\\"Value\\\":\\\"(.+?)\\\"', 1, FaultInfo), @\"\\\\\", @\"\\\")\r\n| parse FaultInfo with * 'SourceOfFault\\\\\":\\\\\"' SourceOfFault: string '\\\\\"' *\r\n| parse FaultInfo with * '\\\"Name\\\":\\\"FaultedByExternalEntity\\\",\\\"Value\\\":\\\"AME\\\\\\\\' UserName:string '\\\"' *\r\n| parse FaultInfo with * '\\\\\"Diagnostic_Summary\\\\\":\\\\\"' DiagnosticSummary:string '\\\\\"' *\r\n| parse DiagnosticSummary with * 'Sending node to OFR because of ' GHRReason:string ':' *\r\n| parse DiagnosticSummary with GHRReason1:string \":\" * \r\n| extend GHRReason = iff(isempty(GHRReason) and isnotempty(GHRReason1), GHRReason1, GHRReason)\r\n// Create buckets\r\n| extend Bucket = iff(SourceOfFault contains \"GuestHealthReporting\", \"GHR\", \"Other\")\r\n| extend Bucket = iff(SourceOfFault contains \"IssuedByCSI-Sparkle\", \"HHS\", Bucket)\r\n| extend Bucket = iff(isnotempty(UserName), \"Manual\", Bucket)\r\n| extend ReportReason = iff(Bucket == \"GHR\" and isnotempty(DiagnosticSummary), DiagnosticSummary, ReportReason)\r\n// Trim known noise\r\n| extend CleanedReportReason = trim_end(@'HawkeyeRCA.*', ReportReason)\r\n| extend CleanedReportReason = trim_end(@'\\.\\s*', CleanedReportReason)\r\n| extend CleanedReportReason = trim_end(@'and RuleType:.*', CleanedReportReason)\r\n| extend CleanedReportReason = trim_end(@'BugCheckTimeStamp .*', CleanedReportReason)\r\n// Parse specific cases from function\r\n| parse FaultInfo with * \"Bad hardware health: 75 -\" * 'Reason\\\\\":\\\\\"' BadHWHealthReason:string '\\\\\"' *\r\n| extend CleanedReportReason = iff(CleanedReportReason startswith \"Bad hardware health: 75 -\", strcat(\"Bad hardware health: \", BadHWHealthReason), CleanedReportReason)\r\n| parse FaultInfo with * \"Reporting recovery failure to fault handler. Marking node HI with fault:\" * 'Reason:' RecoveryFailureReason:string ')' * \r\n| extend CleanedReportReason = iff(CleanedReportReason startswith \"Reporting recovery failure to fault handler. Marking node HI with fault:\", strcat(\"Reporting recovery failure to fault handler. Marking node HI with fault: \", RecoveryFailureReason), CleanedReportReason)\r\n| parse FaultInfo with * \"Node is Unhealthy. Fabric can't reach RdAgent.Hardware error found in SEL.\" * 'EventType:' RdAgentEventType:string ',' * ', EventMessage:' RdAgentEventMessage:string '\\\",\\\"Time' *\r\n| extend CleanedReportReason = iff(CleanedReportReason startswith \"Node is Unhealthy. Fabric can't reach RdAgent.Hardware error found in SEL\", strcat(\"Node is Unhealthy. Fabric can't reach RdAgent.Hardware error found in SEL. EventType:\", RdAgentEventType, \", EventMessage:\", RdAgentEventMessage), CleanedReportReason)\r\n| parse FaultInfo with Error \" since \" Day: date\r\n| extend CleanedReportReason = iff(isnotempty(Error) and isnotempty(Day), Error, CleanedReportReason)\r\n| extend CleanedReportReason = trim_end(@'. HawkeyeRCA.*', CleanedReportReason)\r\n// Key normalizations from the function\r\n| extend CleanedReportReason = iff(CleanedReportReason startswith \"Reporting recovery failure to fault handler\" and CleanedReportReason contains \"stuck in recovery since\",\r\n                             \"Reporting recovery failure to fault handler - stuck in recovery, exceeding the timeout of 1800. Marking node HI.\", \r\n                             CleanedReportReason)\r\n| extend CleanedReportReason = iff(CleanedReportReason startswith \"Node is Unhealthy. Fabric can't reach RdAgent\" and CleanedReportReason contains \"Additional triage required\",\r\n                             \"Node is Unhealthy. Fabric can't reach RdAgent. Mitigating the impact as Node is Unhealthy, Additional triage required for actual RCA.\",\r\n                             CleanedReportReason)\r\n| extend CleanedReportReason = trim_end(@\"\\s*\", CleanedReportReason)\r\n| extend CleanedReportReason = iff(Bucket == \"GHR\" and isnotempty(DiagnosticSummary), DiagnosticSummary, CleanedReportReason)\r\n| extend CleanedReportReason = iff(Bucket == \"GHR\" and isnotempty(GHRReason), GHRReason, CleanedReportReason)\r\n// Handle special cases\r\n| extend Spare = iff(CleanedReportReason startswith \"Node is Unhealthy.\" or CleanedReportReason startswith \"Reporting recovery failure to fault handler.\", CleanedReportReason, \"\")\r\n| extend CleanedReportReason = split(CleanedReportReason, \".\", 0)\r\n| parse CleanedReportReason with * '[\\\"' CleanedReportReason: string '\\\"]' *\r\n| extend CleanedReportReason = iff(isnotempty(Spare), Spare, CleanedReportReason)\r\n// Replace GUIDs with placeholders\r\n| extend CleanedReportReason = replace_regex(CleanedReportReason, @\"\\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\b\", \"<GUID_PLACEHOLDER>\")\r\n// Add HawkeyeRCA\r\n| extend HawkeyeRCA = extract('\\\"Name\\\":\\\"HawkeyeRCA\\\",\\\"Value\\\":\\\"([^\\\"]+)\\\"', 1, FaultInfo)\r\n| extend CleanedReason = strcat(Bucket, \": \", CleanedReportReason)\r\n| extend NodeState = strcat(nodeState, \"/\", nodeAvailabilityState)\r\n| where isnotempty(FaultCode) and isnotempty(CleanedReason)\r\n// JOIN PLATFORM INFO AFTER processing (using leftouter to preserve all faults)\r\n| join kind=leftouter (\r\n    cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n    | where $__timeFilter(SnapshotTime)\r\n    | where substring(Tenant, 0, 3) in ($datacenter)\r\n    | where Tenant in~ ($cluster)\r\n    | summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n    | project NodeId, Platform\r\n) on $left.nodeId == $right.NodeId\r\n| extend Platform = coalesce(Platform, \"Unknown\")\r\n| summarize \r\n    Nodes = count(), \r\n    HawkeyeRCAsList = make_set_if(HawkeyeRCA, isnotempty(HawkeyeRCA)), \r\n    EscalateToList = make_set_if(EscalateTo, isnotempty(EscalateTo)),\r\n    NodeList = make_set(nodeId),\r\n    NodeStates = make_set(NodeState)\r\n    by Platform, FaultCode, CleanedReason  // ADDED Platform to grouping\r\n// Convert arrays to strings\r\n| extend EscalateTo = case(\r\n    array_length(EscalateToList) == 0, \"\",\r\n    array_length(EscalateToList) == 1, tostring(EscalateToList[0]),\r\n    strcat_array(EscalateToList, \"; \")\r\n)\r\n| extend HawkeyeRCAs = case(\r\n    array_length(HawkeyeRCAsList) == 0, \"\",\r\n    array_length(HawkeyeRCAsList) == 1, tostring(HawkeyeRCAsList[0]),\r\n    strcat_array(HawkeyeRCAsList, \"; \")\r\n)\r\n| extend NodeStatesStr = strcat_array(NodeStates, \"; \")\r\n| extend NodeListStr = strcat_array(NodeList, \"; \")\r\n| project Platform, Nodes, FaultCode, CleanedReason, HawkeyeRCAs, EscalateTo, NodeStatesStr, NodeListStr\r\n| partition by Platform (sort by Nodes desc | take $top_n_faults)  // ADD TOP N BY PLATFORM\r\n| sort by Platform, Nodes desc",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -746,7 +1161,7 @@
           "resultFormat": "table"
         }
       ],
-      "title": "Top $top_n_faults DCM Faults per Platform",
+      "title": "Top $top_n_faults TM Faults by Fault Reason per Platform",
       "transformations": [
         {
           "disabled": true,
@@ -765,20 +1180,27 @@
           "id": "organize",
           "options": {
             "excludeByName": {
+              "CleanedReason": false,
+              "FaultCategory": true,
+              "HawkeyeRCAs": true,
+              "NodeListStr": true,
+              "NodeStatesStr": true,
               "Rank": true,
+              "ResourceListStr": true,
               "SourceTeam": true,
               "dummy": true
             },
             "includeByName": {},
             "indexByName": {
-              "FaultCategory": 2,
-              "FaultCode": 1,
-              "FaultCount": 5,
+              "CleanedReason": 4,
+              "EscalateTo": 6,
+              "FaultCode": 3,
+              "HawkeyeRCAs": 5,
+              "NodeListStr": 8,
+              "NodeStatesStr": 7,
+              "Nodes": 2,
               "Platform": 0,
-              "SMETeam": 7,
-              "SP3FaultReason": 3,
-              "SampleFaultDescription": 4,
-              "SourceTeam": 6
+              "Tenant": 1
             },
             "renameByName": {
               "FaultCategory": "Fault Category",
@@ -792,6 +1214,7 @@
               "SP3FaultReason": "Fault Reason",
               "SampleFaultDescription": "Fault Description",
               "SourceTeam": "Source Team",
+              "Tenant": "Cluster",
               "TotalOccurrences": "Total Occurences"
             }
           }
@@ -811,12 +1234,12 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "left",
             "cellOptions": {
               "type": "auto"
             },
             "filterable": true,
-            "inspect": false
+            "inspect": true
           },
           "mappings": [],
           "thresholds": {
@@ -877,44 +1300,18 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "SLA Status"
+              "options": "Cluster"
             },
             "properties": [
               {
-                "id": "mappings",
+                "id": "links",
                 "value": [
                   {
-                    "options": {
-                      "At Risk": {
-                        "color": "red",
-                        "index": 1
-                      },
-                      "Healthy": {
-                        "color": "green",
-                        "index": 0
-                      }
-                    },
-                    "type": "value"
+                    "targetBlank": true,
+                    "title": "Cluster View ",
+                    "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&var-cluster=${__data.fields.Cluster}&var-platform=﻿${__data.fields.Platform}&${datacenter:queryparam}"
                   }
                 ]
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Fault Description"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 204
               }
             ]
           }
@@ -924,9 +1321,16 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 67
       },
-      "id": 8,
+      "id": 9,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cluster View",
+          "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&${cluster:queryparam}&${datacenter:queryparam}&${platform:queryparam}"
+        }
+      ],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -940,7 +1344,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "11.2.8",
+      "pluginVersion": "11.6.3",
       "targets": [
         {
           "OpenAI": false,
@@ -966,7 +1370,7 @@
           },
           "hide": false,
           "pluginVersion": "5.1.1",
-          "query": "cluster('hpcguesthealthsignals.eastus.kusto.windows.net').database('guesthealthreporting-telemetry').VmRequestDetails\r\n| where $__timeFilter(PreciseTimestamp)\r\n| where ObservationStatus != \"Healthy\"\r\n| join kind=inner (\r\n    cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n    | where Region in~ ($region) | where Platform in~ ($platform) | where Customer in~ ($customer)\r\n    | where substring(Tenant, 0, 3) in ($datacenter) | where Tenant in~ ($cluster)\r\n    | summarize arg_max(SnapshotTime, Platform) by NodeId\r\n) on NodeId\r\n| summarize \r\n    IssueCount = dcount(NodeId),\r\n    TotalObservations = count(),\r\n    SampleReason = take_any(RmaReason)\r\n    by Platform, ObservationType, ObservationStatus\r\n| partition by Platform (sort by IssueCount desc | take $top_n_faults)\r\n| sort by Platform, IssueCount desc",
+          "query": "// DCM Blade Fault Code Table by Platform - Fixed ResourceId mapping with TOP N\r\nlet _endTime = $__timeTo();\r\nlet _startTime = $__timeFrom();\r\n\r\n// Get platform mapping from snapshot\r\nlet platform_mapping = cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where Region in~ ($region)\r\n| where Platform in~ ($platform)\r\n| where Customer in~ ($customer)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| project NodeId, Platform;\r\n\r\n// Get node inventory to map NodeId to DCM ResourceIds (BladeId/SoCId)\r\nlet node_to_dcm_mapping = cluster('supermonkusto.eastus').database('MissionControl').GetNodeInventory\r\n| where substring(ClusterName, 0, 3) in ($datacenter)\r\n| where ClusterName in~ ($cluster)\r\n| project NodeId, BladeId, SoCId\r\n| mv-expand ResourceId = pack_array(BladeId, SoCId) to typeof(string)\r\n| where isnotempty(ResourceId);\r\n\r\n// Combine platform info with DCM resource mapping\r\nlet platform_to_dcm_mapping = platform_mapping\r\n| join kind=inner node_to_dcm_mapping on NodeId\r\n| project ResourceId, Platform;\r\n\r\ncluster('azuredcm.kusto.windows.net').database('AzureDCMDb').ResourceSnapshotV1\r\n| where PreciseTimeStamp between (_startTime .. _endTime)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Region in~ ($region)\r\n| where CloudName == \"Public\"\r\n| summarize arg_max(PreciseTimeStamp, *) by ResourceId\r\n| where FaultCode > 0\r\n| join kind=inner platform_to_dcm_mapping on ResourceId\r\n| extend FaultCategory = case(\r\n    FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n    FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n    FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n    FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n    FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n    FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n    FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n    FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n    FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n    FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n    FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n    FaultCode > 70009, \"Special Fault Codes\",\r\n    \"Unknown\"\r\n)\r\n| summarize \r\n    FaultCount = dcount(ResourceId),\r\n    TotalOccurrences = count(),\r\n    SampleFaultDescription = take_any(FaultDescription),\r\n    ResourceList = make_set(ResourceId)\r\n    by Platform, FaultCode, FaultCategory\r\n| partition by Platform (sort by FaultCount desc | take $top_n_faults)  // CHANGED FROM 10 TO $top_n_faults\r\n| join kind=leftouter (\r\n    cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n    | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n) on FaultCode\r\n| extend ResourceListStr = strcat_array(ResourceList, \"; \")\r\n| project Platform, FaultCode,FaultCount, FaultCategory, SampleFaultDescription, SP3FaultReason, SourceTeam, SMETeam, ResourceListStr\r\n| sort by Platform, FaultCount desc",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -974,7 +1378,7 @@
           "resultFormat": "table"
         }
       ],
-      "title": "Top $top_n_faults GHR Issues per Platform",
+      "title": "Top $top_n_faults DCM Faults by Fault Code per Platform",
       "transformations": [
         {
           "disabled": true,
@@ -993,37 +1397,254 @@
           "id": "organize",
           "options": {
             "excludeByName": {
+              "FaultCategory": true,
               "Rank": true,
+              "ResourceListStr": true,
+              "SampleFaultDescription": true,
               "SourceTeam": true,
-              "TotalObservations": true,
               "dummy": true
             },
             "includeByName": {},
             "indexByName": {
-              "IssueCount": 4,
-              "ObservationStatus": 3,
-              "ObservationType": 1,
+              "FaultCategory": 4,
+              "FaultCode": 3,
+              "FaultCount": 2,
               "Platform": 0,
-              "SampleReason": 2,
-              "TotalObservations": 5
+              "ResourceListStr": 9,
+              "SMETeam": 8,
+              "SP3FaultReason": 5,
+              "SampleFaultDescription": 6,
+              "SourceTeam": 7,
+              "Tenant": 1
             },
             "renameByName": {
               "FaultCategory": "Fault Category",
               "FaultCode": "Fault Code",
-              "FaultCount": "Fault Count",
+              "FaultCount": "Nodes",
               "FaultDescription": "Fault Description",
-              "IssueCount": "Issue Count",
               "MTRA": "",
               "NIS": "Nodes In Service(NIS)",
-              "ObservationStatus": "Observation Status",
-              "ObservationType": "Observation Category",
               "SLAStatus": "SLA Status",
               "SMETeam": "SME Team",
               "SP3FaultReason": "Fault Reason",
               "SampleFaultDescription": "Fault Description",
-              "SampleReason": "Description",
               "SourceTeam": "Source Team",
-              "TotalObservations": "",
+              "Tenant": "Cluster",
+              "TotalOccurrences": "Total Occurences"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "fem88lm00ugowb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes In Service(NIS)"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "to": 95
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 95,
+                      "result": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cluster"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Cluster View",
+                    "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&var-cluster=${__data.fields.Cluster}&var-platform=﻿${__data.fields.Platform}&${datacenter:queryparam}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 75
+      },
+      "id": 10,
+      "links": [
+        {
+          "title": "Cluster View",
+          "url": "/d/cemixfipo7hfkacluster/cluster-view?orgId=1&from=${__from}﻿﻿&to=﻿﻿${__to}﻿﻿&${cluster:queryparam}&${datacenter:queryparam}&${platform:queryparam}"
+        }
+      ],
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.6.3",
+      "targets": [
+        {
+          "OpenAI": false,
+          "clusterUri": "https://sparkle.eastus.kusto.windows.net/",
+          "database": "blobstreamingdb",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "fem88lm00ugowb"
+          },
+          "expression": {
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "hide": false,
+          "pluginVersion": "5.1.1",
+          "query": "// SoC Fault Code Table by Platform - Use capacity table for platform mapping with TOP N\r\nlet _endTime = $__timeTo();\r\nlet _startTime = $__timeFrom();\r\n\r\n// Get SoC names from node inventory\r\nlet soc_names = cluster('supermonkusto.eastus').database('MissionControl').GetNodeInventory\r\n| where substring(ClusterName, 0, 3) in ($datacenter)\r\n| where ClusterName in~ ($cluster)\r\n| where isnotempty(SoCName)\r\n| project NodeId, SoCName;\r\n\r\n// Get platform mapping from capacity table\r\nlet platform_mapping = cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where $__timeFilter(SnapshotTime)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| summarize arg_max(TimeWindowStart, QueryTime, *) by NodeId\r\n| project NodeId, Platform;\r\n\r\n// Combine to get SoC-to-Platform mapping\r\nlet soc_platform_mapping = soc_names\r\n| join kind=leftouter platform_mapping on NodeId\r\n| extend Platform = coalesce(Platform, \"Unknown\")\r\n| project SoCName, Platform;\r\n\r\ncluster('azuredcm.kusto.windows.net').database('AzureDCMDb').ResourceSnapshotV1\r\n| where Name in (soc_names | project SoCName)\r\n| summarize arg_max(PreciseTimeStamp, *) by ResourceId\r\n| where FaultCode > 0\r\n// Join with platform mapping AFTER processing\r\n| join kind=leftouter soc_platform_mapping on $left.Name == $right.SoCName\r\n| extend Platform = coalesce(Platform, \"Unknown\")\r\n| extend FaultCategory = case(\r\n    FaultCode between (0 .. 9999), \"Auto-generated OFR by FC\",\r\n    FaultCode between (10000 .. 19999), \"Auto-generated HI by FC\", \r\n    FaultCode between (20000 .. 29999), \"Internal Investigation\",\r\n    FaultCode == 30151, \"Internal RCA - Reboots/Bugchecks\",\r\n    FaultCode between (32000 .. 32999), \"Internal RCA - CSI Reserved\",\r\n    FaultCode between (34401 .. 34499), \"Internal RCA - Bugcheck\",\r\n    FaultCode between (60000 .. 60999), \"Hardware RMA\",\r\n    FaultCode between (61000 .. 61999), \"Vendor Attention\",\r\n    FaultCode between (62000 .. 62999), \"CSI Diag RMA\",\r\n    FaultCode between (63000 .. 63999), \"Non-CSI Diag RMA\",\r\n    FaultCode between (70000 .. 70009), \"Repeat Failer\",\r\n    FaultCode > 70009, \"Special Fault Codes\",\r\n    \"Unknown\"\r\n)\r\n| summarize \r\n    SoCs = count(),\r\n    SoCList = make_set(Name),\r\n    SampleFaultDescription = take_any(FaultDescription)\r\n    by Platform, FaultCode, FaultCategory\r\n| partition by Platform (sort by SoCs desc | take $top_n_faults)  // TOP N PER PLATFORM\r\n| join kind = leftouter (cluster('hqse.kusto.windows.net').database('hqsedb').external_table('MoAD_RedlineFaultCodes')\r\n    | project FaultCode, SP3FaultReason, SourceTeam, SMETeam\r\n) on FaultCode\r\n| extend SoCListStr = strcat_array(SoCList, \"; \")\r\n| project Platform, FaultCode, SoCs, FaultCategory, SampleFaultDescription, SP3FaultReason, SourceTeam, SMETeam, SoCListStr\r\n| sort by Platform, SoCs desc",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Top $top_n_faults SoC Faults by Fault Code per Platform",
+      "transformations": [
+        {
+          "disabled": true,
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "FaultCount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "FaultCategory": true,
+              "Rank": true,
+              "ResourceListStr": true,
+              "SampleFaultDescription": true,
+              "SoCListStr": true,
+              "SourceTeam": true,
+              "dummy": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "FaultCategory": 4,
+              "FaultCode": 3,
+              "Platform": 0,
+              "SMETeam": 8,
+              "SP3FaultReason": 5,
+              "SampleFaultDescription": 6,
+              "SoCListStr": 9,
+              "SoCs": 2,
+              "SourceTeam": 7,
+              "Tenant": 1
+            },
+            "renameByName": {
+              "FaultCategory": "Fault Category",
+              "FaultCode": "Fault Code",
+              "FaultCount": "Nodes",
+              "FaultDescription": "Fault Description",
+              "MTRA": "",
+              "NIS": "Nodes In Service(NIS)",
+              "Platform": "",
+              "SLAStatus": "SLA Status",
+              "SMETeam": "SME Team",
+              "SP3FaultReason": "Fault Reason",
+              "SampleFaultDescription": "Fault Description",
+              "SourceTeam": "Source Team",
+              "Tenant": "Cluster",
               "TotalOccurrences": "Total Occurences"
             }
           }
@@ -1032,18 +1653,15 @@
       "type": "table"
     }
   ],
+  "preload": false,
   "refresh": "",
-  "schemaVersion": 39,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
-        "allValue": "",
         "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1053,7 +1671,6 @@
           "uid": "fem88lm00ugowb"
         },
         "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| distinct Region\r\n| order by Region asc",
-        "hide": 0,
         "includeAll": true,
         "label": "region",
         "multi": true,
@@ -1092,18 +1709,15 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
           "text": [
-            "All"
+            "DSM"
           ],
           "value": [
-            "$__all"
+            "DSM"
           ]
         },
         "datasource": {
@@ -1111,7 +1725,6 @@
           "uid": "fem88lm00ugowb"
         },
         "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| extend DC = substring(Tenant, 0, 3)\r\n| distinct DC\r\n| order by DC asc\r\n",
-        "hide": 0,
         "includeAll": true,
         "label": "datacenter",
         "multi": true,
@@ -1150,18 +1763,15 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
           "text": [
-            "All"
+            "DSM12PrdGPC05"
           ],
           "value": [
-            "$__all"
+            "DSM12PrdGPC05"
           ]
         },
         "datasource": {
@@ -1169,7 +1779,6 @@
           "uid": "fem88lm00ugowb"
         },
         "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| distinct Tenant\r\n| order by Tenant asc\r\n",
-        "hide": 0,
         "includeAll": true,
         "label": "cluster",
         "multi": true,
@@ -1208,16 +1817,11 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1227,7 +1831,6 @@
           "uid": "fem88lm00ugowb"
         },
         "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| distinct Customer\r\n| order by Customer asc\r\n",
-        "hide": 0,
         "includeAll": true,
         "label": "customer",
         "multi": true,
@@ -1266,16 +1869,11 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1285,7 +1883,6 @@
           "uid": "fem88lm00ugowb"
         },
         "definition": "cluster('vmakpi').database('AzureHPCAnalytics').AzureHPC_CapacityBucketDashboard_Snapshot\r\n| where Region in~ ($region)\r\n| where substring(Tenant, 0, 3) in ($datacenter)\r\n| where Tenant in~ ($cluster)\r\n| where Customer in~ ($customer)\r\n| distinct Platform\r\n| order by Platform asc\r\n",
-        "hide": 0,
         "includeAll": true,
         "label": "platform",
         "multi": true,
@@ -1324,20 +1921,15 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": false,
           "text": "10",
           "value": "10"
         },
-        "hide": 0,
         "includeAll": false,
         "label": "top_n_faults",
-        "multi": false,
         "name": "top_n_faults",
         "options": [
           {
@@ -1367,20 +1959,17 @@
           }
         ],
         "query": "3,5,10,15,20",
-        "queryValue": "",
-        "skipUrlSync": false,
         "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-6M",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "browser",
+  "timezone": "America/New_York",
   "title": "Fleet View",
   "uid": "cemixfipo7hfka",
-  "version": 37,
-  "weekStart": ""
+  "version": 52
 }
